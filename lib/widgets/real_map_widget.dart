@@ -224,7 +224,7 @@ class _RealMapWidgetState extends State<RealMapWidget> {
           
           // Map controls
           Positioned(
-            top: 16,
+            top: 120,
             right: 16,
             child: Column(
               children: [
@@ -239,7 +239,7 @@ class _RealMapWidgetState extends State<RealMapWidget> {
                       color: AppColors.primary,
                     ),
                   ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 20),
                 // Zoom in button
                 FloatingActionButton.small(
                   heroTag: "zoom_in",
@@ -253,7 +253,7 @@ class _RealMapWidgetState extends State<RealMapWidget> {
                     color: AppColors.primary,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 20),
                 // Zoom out button
                 FloatingActionButton.small(
                   heroTag: "zoom_out",

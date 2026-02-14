@@ -443,23 +443,26 @@ class _AddParkingScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            Row(
-              children: ['Covered', 'Open', 'Underground'].map((type) {
-                return Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: ChoiceChip(
-                    label: Text(type),
-                    selected: type == 'Covered',
-                    selectedColor: AppColors.primary,
-                    labelStyle: GoogleFonts.poppins(
-                      fontSize: 13,
-                      color:
-                          type == 'Covered' ? Colors.white : AppColors.textPrimary,
-                    ),
-                    onSelected: (_) {},
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: ['Covered', 'Open', 'Underground'].map((type) {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: ChoiceChip(
+                      label: Text(type),
+                      selected: type == 'Covered',
+                      selectedColor: AppColors.primary,
+                      labelStyle: GoogleFonts.poppins(
+                        fontSize: 13,
+                        color:
+                            type == 'Covered' ? Colors.white : AppColors.textPrimary,
+                      ),
+                      onSelected: (_) {},
                   ),
                 );
               }).toList(),
+              ),
             ),
             const SizedBox(height: 16),
             // Amenities
