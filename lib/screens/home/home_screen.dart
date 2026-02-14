@@ -19,7 +19,58 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+  double _sheetPosition = 0.52; // Initial position
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    
+    _fadeAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.0,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
+    
+    _slideAnimation = Tween<Offset>(
+      begin: Offset.zero,
+      end: const Offset(0, -1),
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void _onSheetPositionChanged(double position) {
+    setState(() {
+      _sheetPosition = position;
+    });
+    
+    // Animate based on sheet position
+    // Start hiding when sheet is above 0.7, fully hidden at 0.85
+    if (position > 0.7) {
+      final progress = ((position - 0.7) / 0.2).clamp(0.0, 1.0);
+      _animationController.animateTo(progress);
+    } else {
+      _animationController.animateTo(0.0);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<AppProvider>();
@@ -28,10 +79,12 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: AppColors.backgroundLight,
       body: Stack(
         children: [
-          // Real map (top half)
+          // Real map (full screen, will be clipped by bottom sheet)
           RealMapWidget(
-            height: MediaQuery.of(context).size.height * 0.48,
+            height: MediaQuery.of(context).size.height,
             parkingSpots: provider.filteredSpots,
+            fadeAnimation: _fadeAnimation,
+            slideAnimation: _slideAnimation,
             onMarkerTap: (spot) {
               provider.selectSpot(spot);
               Navigator.of(context).push(
@@ -42,116 +95,135 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
 
-          // Search bar at top
-          Positioned(
-            top: MediaQuery.of(context).padding.top + 12,
-            left: 20,
-            right: 20,
-            child: Row(
-              children: [
-                // Search field
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        PageRouteBuilder(
-                          pageBuilder: (_, __, ___) => const SearchScreen(),
-                          transitionsBuilder: (_, animation, __, child) {
-                            return FadeTransition(
-                                opacity: animation, child: child);
-                          },
-                          transitionDuration: const Duration(milliseconds: 300),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      height: 52,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(28),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.08),
-                            blurRadius: 16,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.search,
-                              color: AppColors.primary, size: 22),
-                          const SizedBox(width: 12),
-                          Text(
-                            AppStrings.whereAreYouGoing,
-                            style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              color: AppColors.textHint,
+          // Animated Search bar at top
+          AnimatedBuilder(
+            animation: _animationController,
+            builder: (context, child) {
+              return SlideTransition(
+                position: _slideAnimation,
+                child: FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: Positioned(
+                    top: MediaQuery.of(context).padding.top + 12,
+                    left: 20,
+                    right: 20,
+                    child: Row(
+                      children: [
+                        // Search field
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                PageRouteBuilder(
+                                  pageBuilder: (_, __, ___) => const SearchScreen(),
+                                  transitionsBuilder: (_, animation, __, child) {
+                                    return FadeTransition(
+                                        opacity: animation, child: child);
+                                  },
+                                  transitionDuration: const Duration(milliseconds: 300),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              height: 52,
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(28),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.08),
+                                    blurRadius: 16,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.search,
+                                      color: AppColors.primary, size: 22),
+                                  const SizedBox(width: 12),
+                                  Text(
+                                    AppStrings.whereAreYouGoing,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 14,
+                                      color: AppColors.textHint,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(width: 12),
+                        // Notification bell
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.08),
+                                blurRadius: 16,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Stack(
+                            children: [
+                              const Center(
+                                child: Icon(Icons.notifications_outlined,
+                                    color: AppColors.textPrimary, size: 24),
+                              ),
+                              // Red notification dot
+                              Positioned(
+                                top: 12,
+                                right: 12,
+                                child: Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: const BoxDecoration(
+                                    color: AppColors.error,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
-                // Notification bell
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
-                        blurRadius: 16,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Stack(
-                    children: [
-                      const Center(
-                        child: Icon(Icons.notifications_outlined,
-                            color: AppColors.textPrimary, size: 24),
-                      ),
-                      // Red notification dot
-                      Positioned(
-                        top: 12,
-                        right: 12,
-                        child: Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            color: AppColors.error,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+              );
+            },
           ),
 
           // Bottom sheet with filters and nearby parking
-          DraggableScrollableSheet(
-            initialChildSize: 0.48,
-            minChildSize: 0.35,
-            maxChildSize: 0.85,
-            builder: (context, scrollController) {
+          NotificationListener<DraggableScrollableNotification>(
+            onNotification: (notification) {
+              _onSheetPositionChanged(notification.extent);
+              return true;
+            },
+            child: DraggableScrollableSheet(
+              initialChildSize: 0.52,
+              minChildSize: 0.35,
+              maxChildSize: 0.9,
+              snap: true,
+              snapSizes: const [0.35, 0.52, 0.9],
+              builder: (context, scrollController) {
               return Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 20,
-                      offset: Offset(0, -4),
+                      color: Colors.black.withOpacity(0.15),
+                      blurRadius: 25,
+                      offset: const Offset(0, -8),
+                      spreadRadius: 0,
                     ),
                   ],
                 ),
