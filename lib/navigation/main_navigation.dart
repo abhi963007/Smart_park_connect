@@ -2,41 +2,108 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../core/constants/app_colors.dart';
-import '../core/constants/app_strings.dart';
+import '../models/user_model.dart';
 import '../providers/app_provider.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/home/saved_screen.dart';
 import '../screens/booking/bookings_screen.dart';
 import '../screens/profile/profile_screen.dart';
 import '../screens/owner/owner_dashboard_screen.dart';
+import '../screens/admin/admin_dashboard_screen.dart';
 
-/// Main navigation shell with bottom navigation bar
-/// Matches reference: 5-tab bottom nav (Explore, Bookings, Host, Messages, Profile)
+/// Main navigation shell with role-based bottom navigation bar
+/// Driver: Explore, Saved, Bookings, Profile
+/// Owner: Explore, Dashboard, Bookings, Profile
+/// Admin: Dashboard, Explore, Bookings, Profile
 class MainNavigation extends StatefulWidget {
-  const MainNavigation({super.key});
+  final int initialIndex;
+  const MainNavigation({super.key, this.initialIndex = 0});
 
   @override
   State<MainNavigation> createState() => _MainNavigationState();
 }
 
 class _MainNavigationState extends State<MainNavigation> {
-  int _currentIndex = 0;
+  late int _currentIndex;
 
-  // Screens for each tab
-  final List<Widget> _screens = const [
-    HomeScreen(),
-    SavedScreen(),
-    OwnerDashboardScreen(),
-    BookingsScreen(),
-    ProfileScreen(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+  }
+
+  /// Get screens based on user role
+  List<Widget> _getScreens(UserRole role) {
+    switch (role) {
+      case UserRole.admin:
+        return const [
+          AdminDashboardScreen(),
+          HomeScreen(),
+          BookingsScreen(),
+          ProfileScreen(),
+        ];
+      case UserRole.owner:
+        return const [
+          HomeScreen(),
+          OwnerDashboardScreen(),
+          BookingsScreen(),
+          ProfileScreen(),
+        ];
+      case UserRole.user:
+      default:
+        return const [
+          HomeScreen(),
+          SavedScreen(),
+          BookingsScreen(),
+          ProfileScreen(),
+        ];
+    }
+  }
+
+  /// Get nav items based on user role
+  List<_NavItemData> _getNavItems(UserRole role) {
+    switch (role) {
+      case UserRole.admin:
+        return [
+          _NavItemData(Icons.dashboard_outlined, Icons.dashboard, 'Dashboard'),
+          _NavItemData(Icons.explore_outlined, Icons.explore, 'Explore'),
+          _NavItemData(Icons.calendar_today_outlined, Icons.calendar_today, 'Bookings'),
+          _NavItemData(Icons.person_outline, Icons.person, 'Profile'),
+        ];
+      case UserRole.owner:
+        return [
+          _NavItemData(Icons.explore_outlined, Icons.explore, 'Explore'),
+          _NavItemData(Icons.dashboard_outlined, Icons.dashboard, 'Dashboard'),
+          _NavItemData(Icons.calendar_today_outlined, Icons.calendar_today, 'Bookings'),
+          _NavItemData(Icons.person_outline, Icons.person, 'Profile'),
+        ];
+      case UserRole.user:
+      default:
+        return [
+          _NavItemData(Icons.explore_outlined, Icons.explore, 'Explore'),
+          _NavItemData(Icons.favorite_border, Icons.favorite, 'Saved'),
+          _NavItemData(Icons.calendar_today_outlined, Icons.calendar_today, 'Bookings'),
+          _NavItemData(Icons.person_outline, Icons.person, 'Profile'),
+        ];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<AppProvider>();
+    final role = provider.currentUser.role;
+    final screens = _getScreens(role);
+    final navItems = _getNavItems(role);
+
+    // Clamp index to valid range
+    if (_currentIndex >= screens.length) {
+      _currentIndex = 0;
+    }
+
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
-        children: _screens,
+        children: screens,
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
@@ -54,17 +121,14 @@ class _MainNavigationState extends State<MainNavigation> {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildNavItem(0, Icons.explore_outlined, Icons.explore,
-                    AppStrings.explore),
-                _buildNavItem(1, Icons.bookmark_border, Icons.bookmark,
-                    AppStrings.bookings),
-                _buildHostButton(),
-                _buildNavItem(3, Icons.chat_bubble_outline,
-                    Icons.chat_bubble, AppStrings.messages),
-                _buildNavItem(
-                    4, Icons.person_outline, Icons.person, AppStrings.profile),
-              ],
+              children: List.generate(navItems.length, (index) {
+                return _buildNavItem(
+                  index,
+                  navItems[index].icon,
+                  navItems[index].activeIcon,
+                  navItems[index].label,
+                );
+              }),
             ),
           ),
         ),
@@ -80,7 +144,7 @@ class _MainNavigationState extends State<MainNavigation> {
       onTap: () => setState(() => _currentIndex = index),
       behavior: HitTestBehavior.opaque,
       child: SizedBox(
-        width: 64,
+        width: 72,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -103,46 +167,11 @@ class _MainNavigationState extends State<MainNavigation> {
       ),
     );
   }
+}
 
-  /// Center "Host" button with elevated purple circle (matches reference)
-  Widget _buildHostButton() {
-    final isSelected = _currentIndex == 2;
-    return GestureDetector(
-      onTap: () => setState(() => _currentIndex = 2),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 52,
-            height: 52,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [AppColors.primary, AppColors.accent],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withOpacity(0.4),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: const Icon(Icons.add, color: Colors.white, size: 28),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            AppStrings.host,
-            style: GoogleFonts.poppins(
-              fontSize: 11,
-              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-              color: isSelected ? AppColors.primary : AppColors.textHint,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+class _NavItemData {
+  final IconData icon;
+  final IconData activeIcon;
+  final String label;
+  const _NavItemData(this.icon, this.activeIcon, this.label);
 }

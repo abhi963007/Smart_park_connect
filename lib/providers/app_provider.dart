@@ -138,7 +138,15 @@ class AppProvider extends ChangeNotifier {
   }
 
   // ---------- BOOKINGS ----------
-  List<Booking> get bookings => MockDataService.sampleBookings;
+  final List<Booking> _userBookings = [];
+
+  List<Booking> get bookings => [..._userBookings, ...MockDataService.sampleBookings];
+
+  /// Add a new booking after successful payment
+  void addBooking(Booking booking) {
+    _userBookings.insert(0, booking);
+    notifyListeners();
+  }
 
   // ---------- BOOKING FLOW STATE ----------
   ParkingSpot? _selectedSpot;
