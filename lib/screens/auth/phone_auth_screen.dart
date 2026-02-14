@@ -119,41 +119,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 32),
-                // Parking illustration
+                // App logo
                 Center(
-                  child: Container(
-                    width: 160,
-                    height: 160,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColors.primary.withOpacity(0.06),
-                    ),
-                    child: Center(
-                      child: Container(
-                        width: 110,
-                        height: 110,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [AppColors.primary, AppColors.accent],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(24),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withOpacity(0.3),
-                              blurRadius: 20,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.local_parking,
-                          size: 50,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
+                  child: Image.asset(
+                    'logo.png',
+                    width: 180,
+                    height: 180,
+                    fit: BoxFit.contain,
                   ),
                 ),
                 const SizedBox(height: 36),

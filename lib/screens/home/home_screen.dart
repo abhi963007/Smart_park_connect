@@ -19,55 +19,21 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
-  late Animation<Offset> _slideAnimation;
-  double _sheetPosition = 0.52; // Initial position
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    
-    _fadeAnimation = Tween<double>(
-      begin: 1.0,
-      end: 0.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
-    
-    _slideAnimation = Tween<Offset>(
-      begin: Offset.zero,
-      end: const Offset(0, -1),
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
-  }
+class _HomeScreenState extends State<HomeScreen> {
+  final ValueNotifier<double> _uiHideProgress = ValueNotifier<double>(0.0);
 
   @override
   void dispose() {
-    _animationController.dispose();
+    _uiHideProgress.dispose();
     super.dispose();
   }
 
   void _onSheetPositionChanged(double position) {
-    setState(() {
-      _sheetPosition = position;
-    });
-    
-    // Animate based on sheet position
-    // Start hiding when sheet is above 0.7, fully hidden at 0.85
-    if (position > 0.7) {
-      final progress = ((position - 0.7) / 0.2).clamp(0.0, 1.0);
-      _animationController.animateTo(progress);
-    } else {
-      _animationController.animateTo(0.0);
+    // Hide UI progressively as bottom sheet expands.
+    // 0.58 -> start hiding, 0.85 -> fully hidden.
+    final progress = ((position - 0.58) / 0.27).clamp(0.0, 1.0);
+    if ((progress - _uiHideProgress.value).abs() > 0.002) {
+      _uiHideProgress.value = progress;
     }
   }
 
@@ -83,8 +49,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           RealMapWidget(
             height: MediaQuery.of(context).size.height,
             parkingSpots: provider.filteredSpots,
-            fadeAnimation: _fadeAnimation,
-            slideAnimation: _slideAnimation,
+            uiHideProgressListenable: _uiHideProgress,
             onMarkerTap: (spot) {
               provider.selectSpot(spot);
               Navigator.of(context).push(
@@ -96,40 +61,79 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
 
           // Animated Search bar at top
-          AnimatedBuilder(
-            animation: _animationController,
-            builder: (context, child) {
-              return SlideTransition(
-                position: _slideAnimation,
-                child: FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: Positioned(
-                    top: MediaQuery.of(context).padding.top + 12,
-                    left: 20,
-                    right: 20,
-                    child: Row(
-                      children: [
-                        // Search field
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                PageRouteBuilder(
-                                  pageBuilder: (_, __, ___) => const SearchScreen(),
-                                  transitionsBuilder: (_, animation, __, child) {
-                                    return FadeTransition(
-                                        opacity: animation, child: child);
-                                  },
-                                  transitionDuration: const Duration(milliseconds: 300),
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 12,
+            left: 20,
+            right: 20,
+            child: ValueListenableBuilder<double>(
+              valueListenable: _uiHideProgress,
+              builder: (context, progress, child) {
+                return IgnorePointer(
+                  ignoring: progress > 0.95,
+                  child: Opacity(
+                    opacity: 1 - progress,
+                    child: Transform.translate(
+                      offset: Offset(0, -22 * progress),
+                      child: Transform.scale(
+                        scale: 1 - (0.06 * progress),
+                        alignment: Alignment.topCenter,
+                        child: Row(
+                          children: [
+                            // Search field
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    PageRouteBuilder(
+                                      pageBuilder: (_, __, ___) => const SearchScreen(),
+                                      transitionsBuilder: (_, animation, __, child) {
+                                        return FadeTransition(
+                                            opacity: animation, child: child);
+                                      },
+                                      transitionDuration:
+                                          const Duration(milliseconds: 300),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  height: 52,
+                                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(28),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.08),
+                                        blurRadius: 16,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.search,
+                                          color: AppColors.primary, size: 22),
+                                      const SizedBox(width: 12),
+                                      Text(
+                                        AppStrings.whereAreYouGoing,
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 14,
+                                          color: AppColors.textHint,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              );
-                            },
-                            child: Container(
-                              height: 52,
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            // Notification bell
+                            Container(
+                              width: 48,
+                              height: 48,
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(28),
+                                shape: BoxShape.circle,
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.black.withOpacity(0.08),
@@ -138,74 +142,42 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   ),
                                 ],
                               ),
-                              child: Row(
+                              child: Stack(
                                 children: [
-                                  const Icon(Icons.search,
-                                      color: AppColors.primary, size: 22),
-                                  const SizedBox(width: 12),
-                                  Text(
-                                    AppStrings.whereAreYouGoing,
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 14,
-                                      color: AppColors.textHint,
+                                  const Center(
+                                    child: Icon(Icons.notifications_outlined,
+                                        color: AppColors.textPrimary, size: 24),
+                                  ),
+                                  Positioned(
+                                    top: 12,
+                                    right: 12,
+                                    child: Container(
+                                      width: 8,
+                                      height: 8,
+                                      decoration: const BoxDecoration(
+                                        color: AppColors.error,
+                                        shape: BoxShape.circle,
+                                      ),
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                          ),
+                          ],
                         ),
-                        const SizedBox(width: 12),
-                        // Notification bell
-                        Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.08),
-                                blurRadius: 16,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Stack(
-                            children: [
-                              const Center(
-                                child: Icon(Icons.notifications_outlined,
-                                    color: AppColors.textPrimary, size: 24),
-                              ),
-                              // Red notification dot
-                              Positioned(
-                                top: 12,
-                                right: 12,
-                                child: Container(
-                                  width: 8,
-                                  height: 8,
-                                  decoration: const BoxDecoration(
-                                    color: AppColors.error,
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
 
           // Bottom sheet with filters and nearby parking
           NotificationListener<DraggableScrollableNotification>(
             onNotification: (notification) {
               _onSheetPositionChanged(notification.extent);
-              return true;
+              return false;
             },
             child: DraggableScrollableSheet(
               initialChildSize: 0.52,
@@ -373,6 +345,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
               );
             },
+            ),
           ),
         ],
       ),

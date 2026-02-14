@@ -112,31 +112,12 @@ class _SplashScreenState extends State<SplashScreen>
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // P icon in rounded square
-                      Container(
-                        width: 90,
-                        height: 90,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        child: Center(
-                          child: Container(
-                            width: 70,
-                            height: 70,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.3),
-                              borderRadius: BorderRadius.circular(18),
-                            ),
-                            child: const Center(
-                              child: Icon(
-                                Icons.local_parking,
-                                color: Colors.white,
-                                size: 36,
-                              ),
-                            ),
-                          ),
-                        ),
+                      // App logo
+                      Image.asset(
+                        'logo.png',
+                        width: 120,
+                        height: 120,
+                        fit: BoxFit.contain,
                       ),
                       const SizedBox(height: 28),
                       // App name

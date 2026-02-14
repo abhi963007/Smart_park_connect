@@ -37,6 +37,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - logo.png
 
   # Fonts are loaded via google_fonts package at runtime
   # No bundled font files needed

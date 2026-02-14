@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,12 +12,14 @@ class RealMapWidget extends StatefulWidget {
   final List<ParkingSpot> parkingSpots;
   final Function(ParkingSpot)? onMarkerTap;
   final double height;
+  final ValueListenable<double>? uiHideProgressListenable;
 
   const RealMapWidget({
     super.key,
     required this.parkingSpots,
     this.onMarkerTap,
     this.height = 400,
+    this.uiHideProgressListenable,
   });
 
   @override
@@ -222,54 +225,14 @@ class _RealMapWidgetState extends State<RealMapWidget> {
             ],
           ),
           
-          // Map controls
-          Positioned(
-            top: 120,
-            right: 16,
-            child: Column(
-              children: [
-                // Current location button
-                if (_locationPermissionGranted)
-                  FloatingActionButton.small(
-                    heroTag: "location",
-                    onPressed: _goToCurrentLocation,
-                    backgroundColor: Colors.white,
-                    child: const Icon(
-                      Icons.my_location,
-                      color: AppColors.primary,
-                    ),
-                  ),
-                const SizedBox(height: 20),
-                // Zoom in button
-                FloatingActionButton.small(
-                  heroTag: "zoom_in",
-                  onPressed: () {
-                    final zoom = _mapController.camera.zoom;
-                    _mapController.move(_mapController.camera.center, zoom + 1);
-                  },
-                  backgroundColor: Colors.white,
-                  child: const Icon(
-                    Icons.add,
-                    color: AppColors.primary,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                // Zoom out button
-                FloatingActionButton.small(
-                  heroTag: "zoom_out",
-                  onPressed: () {
-                    final zoom = _mapController.camera.zoom;
-                    _mapController.move(_mapController.camera.center, zoom - 1);
-                  },
-                  backgroundColor: Colors.white,
-                  child: const Icon(
-                    Icons.remove,
-                    color: AppColors.primary,
-                  ),
-                ),
-              ],
+          // Map controls (hide as sheet expands)
+          if (widget.uiHideProgressListenable == null)
+            _buildControls(0)
+          else
+            ValueListenableBuilder<double>(
+              valueListenable: widget.uiHideProgressListenable!,
+              builder: (context, progress, _) => _buildControls(progress),
             ),
-          ),
           
           // Location permission banner
           if (!_locationPermissionGranted)
@@ -343,5 +306,61 @@ class _RealMapWidgetState extends State<RealMapWidget> {
       });
       _initializeMap();
     }
+  }
+
+  Widget _buildControls(double progress) {
+    return Positioned(
+      top: 120,
+      right: 16,
+      child: IgnorePointer(
+        ignoring: progress > 0.95,
+        child: Opacity(
+          opacity: 1 - progress,
+          child: Transform.translate(
+            offset: Offset(0, -20 * progress),
+            child: Column(
+              children: [
+                if (_locationPermissionGranted)
+                  FloatingActionButton.small(
+                    heroTag: 'location',
+                    onPressed: _goToCurrentLocation,
+                    backgroundColor: Colors.white,
+                    child: const Icon(
+                      Icons.my_location,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                const SizedBox(height: 20),
+                FloatingActionButton.small(
+                  heroTag: 'zoom_in',
+                  onPressed: () {
+                    final zoom = _mapController.camera.zoom;
+                    _mapController.move(_mapController.camera.center, zoom + 1);
+                  },
+                  backgroundColor: Colors.white,
+                  child: const Icon(
+                    Icons.add,
+                    color: AppColors.primary,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                FloatingActionButton.small(
+                  heroTag: 'zoom_out',
+                  onPressed: () {
+                    final zoom = _mapController.camera.zoom;
+                    _mapController.move(_mapController.camera.center, zoom - 1);
+                  },
+                  backgroundColor: Colors.white,
+                  child: const Icon(
+                    Icons.remove,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
