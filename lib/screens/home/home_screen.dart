@@ -6,6 +6,7 @@ import '../../core/constants/app_strings.dart';
 import '../../providers/app_provider.dart';
 import '../../services/mock_data_service.dart';
 import '../../widgets/parking_card.dart';
+import '../../widgets/real_map_widget.dart';
 import '../search/search_screen.dart';
 import '../parking/parking_details_screen.dart';
 
