@@ -254,230 +254,120 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-          onPressed: () {
-            if (_hasChanges) {
-              _showDiscardDialog();
-            } else {
-              Navigator.pop(context);
-            }
-          },
-        ),
-        title: Text(
-          'Edit Profile',
-          style: GoogleFonts.poppins(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        centerTitle: true,
-        actions: [
-          if (_hasChanges)
-            TextButton(
-              onPressed: _isSaving ? null : _saveProfile,
-              child: Text(
-                'Save',
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.primary,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // ── Top bar ──
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+              child: Row(children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new, size: 20, color: AppColors.textPrimary),
+                  onPressed: () { if (_hasChanges) { _showDiscardDialog(); } else { Navigator.pop(context); } },
+                ),
+                const Spacer(),
+                Text('Edit Profile', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+                const Spacer(),
+                const SizedBox(width: 48),
+              ]),
+            ),
+            // ── Content ──
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+                child: Form(
+                  key: _formKey,
+                  child: Column(children: [
+                    // ── Avatar ──
+                    GestureDetector(
+                      onTap: _showImagePickerSheet,
+                      child: Column(children: [
+                        Stack(alignment: Alignment.bottomRight, children: [
+                          Container(
+                            width: 130, height: 130,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: LinearGradient(colors: [AppColors.primary.withOpacity(0.18), AppColors.accent.withOpacity(0.08)]),
+                            ),
+                            padding: const EdgeInsets.all(4),
+                            child: CircleAvatar(
+                              radius: 61,
+                              backgroundColor: Colors.white,
+                              backgroundImage: _getAvatarImage(user),
+                              onBackgroundImageError: _getAvatarImage(user) != null ? (_, __) {} : null,
+                              child: _getAvatarImage(user) == null
+                                  ? Text(user.name.isNotEmpty ? user.name[0].toUpperCase() : 'U',
+                                      style: GoogleFonts.poppins(fontSize: 48, fontWeight: FontWeight.w700, color: AppColors.primary))
+                                  : null,
+                            ),
+                          ),
+                          Positioned(bottom: 4, right: 4, child: Container(
+                            width: 40, height: 40,
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(colors: [AppColors.primary, AppColors.accent]),
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 3),
+                              boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 2))],
+                            ),
+                            child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 18),
+                          )),
+                        ]),
+                        const SizedBox(height: 8),
+                        Text('Tap to change photo', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textHint)),
+                      ]),
+                    ),
+                    const SizedBox(height: 28),
+
+                    // ── Form fields ──
+                    _buildTextField(controller: _nameController, label: 'Full Name', hint: 'Enter your full name', icon: Icons.person_outline_rounded,
+                      validator: (v) { if (v == null || v.trim().isEmpty) return 'Name is required'; if (v.trim().length < 2) return 'Name too short'; return null; }),
+                    const SizedBox(height: 18),
+                    _buildTextField(controller: _emailController, label: 'Email Address', hint: 'Enter your email', icon: Icons.email_outlined,
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (v) { if (v == null || v.trim().isEmpty) return 'Email is required'; if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(v!.trim())) return 'Enter a valid email'; return null; }),
+                    const SizedBox(height: 18),
+                    _buildTextField(controller: _phoneController, label: 'Phone Number', hint: 'Enter your phone number', icon: Icons.phone_outlined,
+                      keyboardType: TextInputType.phone,
+                      validator: (v) { if (v != null && v.isNotEmpty && v.length < 10) return 'Enter a valid phone number'; return null; }),
+                    const SizedBox(height: 18),
+                    _buildReadOnlyField(label: 'Account Type', value: user.roleDisplayName, icon: _getRoleIcon(user.role), iconColor: _getRoleBadgeColor(user.role)),
+                    const SizedBox(height: 36),
+
+                    // ── Save button ──
+                    SizedBox(
+                      width: double.infinity, height: 56,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: (_hasChanges && !_isSaving)
+                              ? const LinearGradient(colors: [AppColors.primary, AppColors.accent])
+                              : LinearGradient(colors: [AppColors.primary.withOpacity(0.35), AppColors.accent.withOpacity(0.25)]),
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: (_hasChanges && !_isSaving)
+                              ? [BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 12, offset: const Offset(0, 4))]
+                              : [],
+                        ),
+                        child: ElevatedButton(
+                          onPressed: (_hasChanges && !_isSaving) ? _saveProfile : null,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.transparent,
+                            foregroundColor: Colors.white,
+                            disabledBackgroundColor: Colors.transparent,
+                            disabledForegroundColor: Colors.white70,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            elevation: 0,
+                          ),
+                          child: _isSaving
+                              ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white))
+                              : Text('Save Changes', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600)),
+                        ),
+                      ),
+                    ),
+                  ]),
                 ),
               ),
             ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              const SizedBox(height: 10),
-
-              // Avatar with edit overlay
-              GestureDetector(
-                onTap: _showImagePickerSheet,
-                child: Stack(
-                  alignment: Alignment.bottomRight,
-                  children: [
-                    Container(
-                      width: 130,
-                      height: 130,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: AppColors.primary.withOpacity(0.2),
-                          width: 3,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.primary.withOpacity(0.1),
-                            blurRadius: 20,
-                            spreadRadius: 2,
-                          ),
-                        ],
-                      ),
-                      child: CircleAvatar(
-                        radius: 62,
-                        backgroundColor: AppColors.primary.withOpacity(0.1),
-                        backgroundImage: _getAvatarImage(user),
-                        onBackgroundImageError: _getAvatarImage(user) != null
-                            ? (_, __) {}
-                            : null,
-                        child: _getAvatarImage(user) == null
-                            ? Text(
-                                user.name.isNotEmpty
-                                    ? user.name[0].toUpperCase()
-                                    : 'U',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 48,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.primary,
-                                ),
-                              )
-                            : null,
-                      ),
-                    ),
-                    // Camera button
-                    Positioned(
-                      bottom: 4,
-                      right: 4,
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [AppColors.primary, AppColors.accent],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 3),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withOpacity(0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.camera_alt_rounded,
-                          color: Colors.white,
-                          size: 18,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Tap to change photo',
-                style: GoogleFonts.poppins(
-                  fontSize: 12,
-                  color: AppColors.textHint,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-              const SizedBox(height: 32),
-
-              // Form fields
-              _buildTextField(
-                controller: _nameController,
-                label: 'Full Name',
-                hint: 'Enter your full name',
-                icon: Icons.person_outline_rounded,
-                validator: (v) {
-                  if (v == null || v.trim().isEmpty) return 'Name is required';
-                  if (v.trim().length < 2) return 'Name too short';
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-
-              _buildTextField(
-                controller: _emailController,
-                label: 'Email Address',
-                hint: 'Enter your email',
-                icon: Icons.email_outlined,
-                keyboardType: TextInputType.emailAddress,
-                validator: (v) {
-                  if (v == null || v.trim().isEmpty) return 'Email is required';
-                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(v.trim())) {
-                    return 'Enter a valid email';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-
-              _buildTextField(
-                controller: _phoneController,
-                label: 'Phone Number',
-                hint: 'Enter your phone number',
-                icon: Icons.phone_outlined,
-                keyboardType: TextInputType.phone,
-                validator: (v) {
-                  if (v != null && v.isNotEmpty && v.length < 10) {
-                    return 'Enter a valid phone number';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-
-              // Role (read-only)
-              _buildReadOnlyField(
-                label: 'Account Type',
-                value: user.roleDisplayName,
-                icon: _getRoleIcon(user.role),
-                iconColor: _getRoleBadgeColor(user.role),
-              ),
-              const SizedBox(height: 40),
-
-              // Save button
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: (_hasChanges && !_isSaving) ? _saveProfile : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    disabledBackgroundColor: AppColors.primary.withOpacity(0.4),
-                    disabledForegroundColor: Colors.white70,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: _isSaving
-                      ? const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            color: Colors.white,
-                          ),
-                        )
-                      : Text(
-                          'Save Changes',
-                          style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                ),
-              ),
-              const SizedBox(height: 20),
-            ],
-          ),
+          ],
         ),
       ),
     );
@@ -510,62 +400,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: GoogleFonts.poppins(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-          ),
-        ),
+        Text(label, style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
           keyboardType: keyboardType,
           validator: validator,
-          style: GoogleFonts.poppins(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: AppColors.textPrimary,
-          ),
+          style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.textPrimary),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: GoogleFonts.poppins(
-              color: AppColors.textHint,
-              fontSize: 13,
-            ),
+            hintStyle: GoogleFonts.poppins(color: AppColors.textHint, fontSize: 13),
             prefixIcon: Container(
               margin: const EdgeInsets.all(10),
-              width: 36,
-              height: 36,
+              width: 36, height: 36,
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.08),
-                borderRadius: BorderRadius.circular(10),
-              ),
+                gradient: LinearGradient(colors: [AppColors.primary.withOpacity(0.12), AppColors.primary.withOpacity(0.04)]),
+                borderRadius: BorderRadius.circular(10)),
               child: Icon(icon, color: AppColors.primary, size: 18),
             ),
             filled: true,
             fillColor: Colors.white,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: AppColors.cardBorder),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: AppColors.cardBorder),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: AppColors.primary, width: 2),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: AppColors.error),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: AppColors.error, width: 2),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: AppColors.cardBorder.withOpacity(0.6))),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: AppColors.cardBorder.withOpacity(0.6))),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppColors.primary, width: 1.5)),
+            errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppColors.error)),
+            focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppColors.error, width: 1.5)),
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           ),
         ),
@@ -582,14 +441,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: GoogleFonts.poppins(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
-          ),
-        ),
+        Text(label, style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
         const SizedBox(height: 8),
         Container(
           width: double.infinity,
@@ -597,32 +449,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           decoration: BoxDecoration(
             color: AppColors.backgroundLight,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.cardBorder.withOpacity(0.5)),
+            border: Border.all(color: AppColors.cardBorder.withOpacity(0.4)),
           ),
-          child: Row(
-            children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(icon, color: iconColor, size: 18),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                value,
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-              const Spacer(),
-              Icon(Icons.lock_outline, size: 16, color: AppColors.textHint.withOpacity(0.5)),
-            ],
-          ),
+          child: Row(children: [
+            Container(
+              width: 36, height: 36,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(colors: [iconColor.withOpacity(0.15), iconColor.withOpacity(0.05)]),
+                borderRadius: BorderRadius.circular(10)),
+              child: Icon(icon, color: iconColor, size: 18),
+            ),
+            const SizedBox(width: 12),
+            Text(value, style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.textSecondary)),
+            const Spacer(),
+            Icon(Icons.lock_outline, size: 16, color: AppColors.textHint.withOpacity(0.4)),
+          ]),
         ),
       ],
     );
