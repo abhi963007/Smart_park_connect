@@ -285,17 +285,97 @@ class _RealMapWidgetState extends State<RealMapWidget> {
   }
 
   void _goToCurrentLocation() async {
+    // Check location status first
+    final status = await LocationService.instance.checkLocationStatus();
+    
+    switch (status) {
+      case LocationStatus.serviceDisabled:
+        _showLocationDialog(
+          'Location Services Disabled',
+          'Please enable location services in your device settings to use this feature.',
+          'Open Settings',
+          () async {
+            await LocationService.instance.openLocationSettings();
+            Navigator.of(context).pop();
+          },
+        );
+        return;
+        
+      case LocationStatus.permissionDenied:
+        _showLocationDialog(
+          'Location Permission Required',
+          'This app needs location permission to show your current position on the map.',
+          'Grant Permission',
+          () async {
+            final granted = await LocationService.instance.requestLocationPermission();
+            Navigator.of(context).pop();
+            if (granted) {
+              _goToCurrentLocation(); // Retry after permission granted
+            }
+          },
+        );
+        return;
+        
+      case LocationStatus.permissionDeniedForever:
+        _showLocationDialog(
+          'Location Permission Denied',
+          'Location permission was permanently denied. Please enable it in app settings.',
+          'Open App Settings',
+          () async {
+            await LocationService.instance.openAppSettings();
+            Navigator.of(context).pop();
+          },
+        );
+        return;
+        
+      case LocationStatus.granted:
+        // Permission granted, proceed with getting location
+        break;
+    }
+
+    // If we already have current location, just move to it
     if (_currentLocation != null) {
       _mapController.move(_currentLocation!, 16.0);
-    } else {
-      final location = await LocationService.instance.getCurrentLocation();
-      if (location != null) {
-        setState(() {
-          _currentLocation = location;
-        });
-        _mapController.move(location, 16.0);
-      }
+      return;
     }
+
+    // Try to get current location
+    final location = await LocationService.instance.getCurrentLocation();
+    if (location != null) {
+      setState(() {
+        _currentLocation = location;
+      });
+      _mapController.move(location, 16.0);
+    } else {
+      // Show error if still can't get location
+      _showLocationDialog(
+        'Location Unavailable',
+        'Unable to get your current location. Please check your GPS signal and try again.',
+        'OK',
+        () => Navigator.of(context).pop(),
+      );
+    }
+  }
+
+  void _showLocationDialog(String title, String message, String buttonText, VoidCallback onPressed) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title, style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+        content: Text(message, style: GoogleFonts.poppins()),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('Cancel', style: GoogleFonts.poppins(color: AppColors.textSecondary)),
+          ),
+          ElevatedButton(
+            onPressed: onPressed,
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
+            child: Text(buttonText, style: GoogleFonts.poppins(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
   }
 
   void _requestLocationPermission() async {
