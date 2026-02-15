@@ -322,7 +322,7 @@ class _RealMapWidgetState extends State<RealMapWidget> {
               children: [
                 if (_locationPermissionGranted)
                   FloatingActionButton.small(
-                    heroTag: 'location',
+                    heroTag: null,
                     onPressed: _goToCurrentLocation,
                     backgroundColor: Colors.white,
                     child: const Icon(
@@ -332,7 +332,7 @@ class _RealMapWidgetState extends State<RealMapWidget> {
                   ),
                 const SizedBox(height: 20),
                 FloatingActionButton.small(
-                  heroTag: 'zoom_in',
+                  heroTag: null,
                   onPressed: () {
                     final zoom = _mapController.camera.zoom;
                     _mapController.move(_mapController.camera.center, zoom + 1);
@@ -345,7 +345,7 @@ class _RealMapWidgetState extends State<RealMapWidget> {
                 ),
                 const SizedBox(height: 20),
                 FloatingActionButton.small(
-                  heroTag: 'zoom_out',
+                  heroTag: null,
                   onPressed: () {
                     final zoom = _mapController.camera.zoom;
                     _mapController.move(_mapController.camera.center, zoom - 1);

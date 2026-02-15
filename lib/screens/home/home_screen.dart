@@ -47,6 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           // Real map (full screen, will be clipped by bottom sheet)
           RealMapWidget(
+            key: const ValueKey('home_map'),
             height: MediaQuery.of(context).size.height,
             parkingSpots: provider.filteredSpots,
             uiHideProgressListenable: _uiHideProgress,

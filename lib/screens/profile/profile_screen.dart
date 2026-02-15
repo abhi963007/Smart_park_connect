@@ -8,6 +8,7 @@ import '../../providers/app_provider.dart';
 import '../../navigation/main_navigation.dart';
 import '../auth/phone_auth_screen.dart' show LoginScreen;
 import '../home/saved_screen.dart';
+import 'payment_methods_screen.dart';
 
 /// User Profile & Settings screen with avatar, activity, preferences, system
 /// Matches reference: user_profile_&_settings/screen.png
@@ -179,7 +180,11 @@ class ProfileScreen extends StatelessWidget {
                   iconBg: AppColors.info.withOpacity(0.1),
                   title: AppStrings.paymentMethods,
                   onTap: () {
-                    _showInfoSnackbar(context, 'Payment methods coming soon');
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const PaymentMethodsScreen(),
+                      ),
+                    );
                   },
                 ),
                 _SettingItem(
@@ -200,27 +205,6 @@ class ProfileScreen extends StatelessWidget {
               // SYSTEM section
               _buildSectionHeader(AppStrings.system),
               _buildSettingsCard([
-                _SettingItem(
-                  icon: Icons.dark_mode,
-                  iconColor: AppColors.textPrimary,
-                  iconBg: AppColors.textPrimary.withOpacity(0.1),
-                  title: 'Dark Mode',
-                  trailing: Switch(
-                    value: provider.themeMode == ThemeMode.dark,
-                    onChanged: (_) => provider.toggleTheme(),
-                    activeColor: AppColors.primary,
-                  ),
-                  onTap: () => provider.toggleTheme(),
-                ),
-                _SettingItem(
-                  icon: Icons.notifications,
-                  iconColor: AppColors.primary,
-                  iconBg: AppColors.primary.withOpacity(0.1),
-                  title: AppStrings.notifications,
-                  onTap: () {
-                    _showInfoSnackbar(context, 'Notifications settings coming soon');
-                  },
-                ),
                 _SettingItem(
                   icon: Icons.help_outline,
                   iconColor: AppColors.accent,
