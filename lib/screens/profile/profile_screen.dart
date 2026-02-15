@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +10,7 @@ import '../../navigation/main_navigation.dart';
 import '../auth/phone_auth_screen.dart' show LoginScreen;
 import '../home/saved_screen.dart';
 import 'payment_methods_screen.dart';
+import 'edit_profile_screen.dart';
 
 /// User Profile & Settings screen with avatar, activity, preferences, system
 /// Matches reference: user_profile_&_settings/screen.png
@@ -29,59 +31,64 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 24),
 
               // Profile avatar with edit button
-              Stack(
-                alignment: Alignment.bottomRight,
-                children: [
-                  Container(
-                    width: 110,
-                    height: 110,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: AppColors.primary.withOpacity(0.2),
-                        width: 3,
-                      ),
-                    ),
-                    child: CircleAvatar(
-                      radius: 52,
-                      backgroundColor: AppColors.primary.withOpacity(0.1),
-                      backgroundImage: user.avatarUrl.isNotEmpty
-                          ? NetworkImage(user.avatarUrl)
-                          : null,
-                      onBackgroundImageError: user.avatarUrl.isNotEmpty
-                          ? (_, __) {}
-                          : null,
-                      child: user.avatarUrl.isEmpty
-                          ? Text(
-                              user.name.isNotEmpty
-                                  ? user.name[0].toUpperCase()
-                                  : 'U',
-                              style: GoogleFonts.poppins(
-                                fontSize: 40,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.primary,
-                              ),
-                            )
-                          : null,
-                    ),
-                  ),
-                  // Edit button
-                  Positioned(
-                    bottom: 4,
-                    right: 4,
-                    child: Container(
-                      width: 32,
-                      height: 32,
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const EditProfileScreen()),
+                  );
+                },
+                child: Stack(
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    Container(
+                      width: 110,
+                      height: 110,
                       decoration: BoxDecoration(
-                        color: AppColors.primary,
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 2),
+                        border: Border.all(
+                          color: AppColors.primary.withOpacity(0.2),
+                          width: 3,
+                        ),
                       ),
-                      child: const Icon(Icons.edit,
-                          color: Colors.white, size: 16),
+                      child: CircleAvatar(
+                        radius: 52,
+                        backgroundColor: AppColors.primary.withOpacity(0.1),
+                        backgroundImage: _getAvatarImage(user),
+                        onBackgroundImageError: _getAvatarImage(user) != null
+                            ? (_, __) {}
+                            : null,
+                        child: _getAvatarImage(user) == null
+                            ? Text(
+                                user.name.isNotEmpty
+                                    ? user.name[0].toUpperCase()
+                                    : 'U',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.primary,
+                                ),
+                              )
+                            : null,
+                      ),
                     ),
-                  ),
-                ],
+                    // Edit button
+                    Positioned(
+                      bottom: 4,
+                      right: 4,
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 2),
+                        ),
+                        child: const Icon(Icons.edit,
+                            color: Colors.white, size: 16),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 16),
 
@@ -286,6 +293,17 @@ class ProfileScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  ImageProvider? _getAvatarImage(UserModel user) {
+    if (user.avatarUrl.isEmpty) return null;
+    // Check if it's a local file path
+    if (user.avatarUrl.startsWith('/') || user.avatarUrl.startsWith('C:')) {
+      final file = File(user.avatarUrl);
+      if (file.existsSync()) return FileImage(file);
+      return null;
+    }
+    return NetworkImage(user.avatarUrl);
   }
 
   Color _getRoleBadgeColor(UserRole role) {

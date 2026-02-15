@@ -586,10 +586,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
               height: 56,
               child: ElevatedButton(
                 onPressed: () {
-                  // Create a real booking
+                  // Create a real booking with user and owner info
+                  final provider = context.read<AppProvider>();
+                  final currentUser = provider.currentUser;
                   final now = DateTime.now();
                   final booking = Booking(
                     id: 'bk_${now.millisecondsSinceEpoch}',
+                    userId: currentUser.id,
+                    ownerId: spot.ownerId,
                     parkingSpotId: spot.id,
                     parkingName: spot.name,
                     parkingAddress: spot.address,
@@ -601,8 +605,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     serviceFee: serviceFee,
                     gst: gst,
                     status: 'confirmed',
+                    userName: currentUser.name,
                   );
-                  context.read<AppProvider>().addBooking(booking);
+                  provider.addBooking(booking);
 
                   Navigator.of(context).push(
                     MaterialPageRoute(

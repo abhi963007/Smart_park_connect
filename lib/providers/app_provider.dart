@@ -2,21 +2,15 @@ import 'package:flutter/material.dart';
 import '../models/parking_spot.dart';
 import '../models/booking.dart';
 import '../models/user_model.dart';
-import '../services/mock_data_service.dart';
 import '../services/local_storage_service.dart';
 
 /// Main application state provider
 /// Manages theme, user data, parking spots, bookings, and navigation
+/// All data is persisted locally via SharedPreferences
 class AppProvider extends ChangeNotifier {
   // ---------- THEME ----------
   ThemeMode _themeMode = ThemeMode.light;
   ThemeMode get themeMode => _themeMode;
-
-  void toggleTheme() {
-    _themeMode =
-        _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
-    notifyListeners();
-  }
 
   // ---------- AUTH STATE ----------
   bool _isLoggedIn = false;
@@ -40,8 +34,13 @@ class AppProvider extends ChangeNotifier {
     if (_isLoggedIn) {
       _loggedInUser = await LocalStorageService.getCurrentUser();
     }
-    // Seed default admin account
-    await LocalStorageService.seedDefaultAdmin();
+    // Seed initial data (admin, owner, parking spots)
+    await LocalStorageService.seedInitialData();
+    // Load all persisted data
+    _parkingSpots = await LocalStorageService.getAllParkingSpots();
+    _allBookings = await LocalStorageService.getAllBookings();
+    _favoriteIds = await LocalStorageService.getFavorites();
+    _allUsers = await LocalStorageService.getAllUsers();
     notifyListeners();
   }
 
@@ -63,10 +62,10 @@ class AppProvider extends ChangeNotifier {
     final error = await LocalStorageService.registerUser(user);
     if (error != null) return error;
 
-    // Auto-login after registration
     _loggedInUser = user;
     _isLoggedIn = true;
     await LocalStorageService.saveSession(user);
+    _allUsers = await LocalStorageService.getAllUsers();
     notifyListeners();
     return null;
   }
@@ -79,6 +78,9 @@ class AppProvider extends ChangeNotifier {
     _loggedInUser = user;
     _isLoggedIn = true;
     await LocalStorageService.saveSession(user);
+    // Reload data for this user
+    _allBookings = await LocalStorageService.getAllBookings();
+    _favoriteIds = await LocalStorageService.getFavorites();
     notifyListeners();
     return null;
   }
@@ -92,10 +94,41 @@ class AppProvider extends ChangeNotifier {
 
   // ---------- USER ----------
   UserModel get currentUser =>
-      _loggedInUser ?? MockDataService.currentUser;
+      _loggedInUser ??
+      const UserModel(id: 'guest', name: 'Guest', email: 'guest@app.com');
+
+  /// Update the current user's profile
+  Future<void> updateUser(UserModel updatedUser) async {
+    await LocalStorageService.updateUser(updatedUser);
+    _loggedInUser = updatedUser;
+    _allUsers = await LocalStorageService.getAllUsers();
+    notifyListeners();
+  }
+
+  // ---------- ALL USERS (for admin) ----------
+  List<UserModel> _allUsers = [];
+  List<UserModel> get allUsers => _allUsers;
+
+  Future<void> refreshUsers() async {
+    _allUsers = await LocalStorageService.getAllUsers();
+    notifyListeners();
+  }
 
   // ---------- PARKING SPOTS ----------
-  List<ParkingSpot> get parkingSpots => MockDataService.parkingSpots;
+  List<ParkingSpot> _parkingSpots = [];
+  List<ParkingSpot> get parkingSpots =>
+      _parkingSpots.where((s) => s.status == 'approved').toList();
+
+  /// All spots including pending (for admin/owner)
+  List<ParkingSpot> get allParkingSpots => _parkingSpots;
+
+  /// Spots owned by current user
+  List<ParkingSpot> get myParkingSpots =>
+      _parkingSpots.where((s) => s.ownerId == currentUser.id).toList();
+
+  /// Pending spots (for admin approval)
+  List<ParkingSpot> get pendingParkingSpots =>
+      _parkingSpots.where((s) => s.status == 'pending').toList();
 
   String _selectedFilter = 'All';
   String get selectedFilter => _selectedFilter;
@@ -106,24 +139,59 @@ class AppProvider extends ChangeNotifier {
   }
 
   List<ParkingSpot> get filteredSpots {
-    if (_selectedFilter == 'All') return parkingSpots;
+    final approved = parkingSpots;
+    if (_selectedFilter == 'All') return approved;
     if (_selectedFilter == 'Under \u20B950') {
-      return parkingSpots.where((s) => s.pricePerHour <= 50).toList();
+      return approved.where((s) => s.pricePerHour <= 50).toList();
     }
     if (_selectedFilter == '\u2605 4.5+') {
-      return parkingSpots.where((s) => s.rating >= 4.5).toList();
+      return approved.where((s) => s.rating >= 4.5).toList();
     }
     if (_selectedFilter == 'Covered') {
-      return parkingSpots.where((s) => s.type == 'covered').toList();
+      return approved.where((s) => s.type == 'covered').toList();
     }
-    return parkingSpots
+    return approved
         .where((s) => s.amenities.any(
             (a) => a.toUpperCase().contains(_selectedFilter.toUpperCase())))
         .toList();
   }
 
+  /// Add a new parking spot (owner action)
+  Future<void> addParkingSpot(ParkingSpot spot) async {
+    _parkingSpots.add(spot);
+    await LocalStorageService.saveParkingSpots(_parkingSpots);
+    notifyListeners();
+  }
+
+  /// Approve a parking spot (admin action)
+  Future<void> approveParkingSpot(String id) async {
+    final idx = _parkingSpots.indexWhere((s) => s.id == id);
+    if (idx != -1) {
+      _parkingSpots[idx] = _parkingSpots[idx].copyWith(status: 'approved');
+      await LocalStorageService.saveParkingSpots(_parkingSpots);
+      notifyListeners();
+    }
+  }
+
+  /// Reject a parking spot (admin action)
+  Future<void> rejectParkingSpot(String id) async {
+    final idx = _parkingSpots.indexWhere((s) => s.id == id);
+    if (idx != -1) {
+      _parkingSpots[idx] = _parkingSpots[idx].copyWith(status: 'rejected');
+      await LocalStorageService.saveParkingSpots(_parkingSpots);
+      notifyListeners();
+    }
+  }
+
+  /// Delete a parking spot
+  Future<void> deleteParkingSpot(String id) async {
+    _parkingSpots.removeWhere((s) => s.id == id);
+    await LocalStorageService.saveParkingSpots(_parkingSpots);
+    notifyListeners();
+  }
+
   // ---------- FAVORITES ----------
-  final Set<String> _favoriteIds = {};
+  Set<String> _favoriteIds = {};
   Set<String> get favoriteIds => _favoriteIds;
 
   bool isFavorite(String id) => _favoriteIds.contains(id);
@@ -134,19 +202,71 @@ class AppProvider extends ChangeNotifier {
     } else {
       _favoriteIds.add(id);
     }
+    LocalStorageService.saveFavorites(_favoriteIds);
     notifyListeners();
   }
 
   // ---------- BOOKINGS ----------
-  final List<Booking> _userBookings = [];
+  List<Booking> _allBookings = [];
 
-  List<Booking> get bookings => [..._userBookings, ...MockDataService.sampleBookings];
+  /// Bookings for current user (driver sees their bookings)
+  List<Booking> get bookings {
+    if (currentUser.role == UserRole.admin) return _allBookings;
+    if (currentUser.role == UserRole.owner) {
+      return _allBookings
+          .where((b) =>
+              b.ownerId == currentUser.id || b.userId == currentUser.id)
+          .toList();
+    }
+    return _allBookings
+        .where((b) => b.userId == currentUser.id)
+        .toList();
+  }
+
+  /// All bookings (for admin)
+  List<Booking> get allBookings => _allBookings;
+
+  /// Bookings for owner's spots
+  List<Booking> get ownerBookings =>
+      _allBookings.where((b) => b.ownerId == currentUser.id).toList();
 
   /// Add a new booking after successful payment
-  void addBooking(Booking booking) {
-    _userBookings.insert(0, booking);
+  Future<void> addBooking(Booking booking) async {
+    _allBookings.insert(0, booking);
+    await LocalStorageService.saveBookings(_allBookings);
     notifyListeners();
   }
+
+  /// Update booking status
+  Future<void> updateBookingStatus(String id, String status) async {
+    final idx = _allBookings.indexWhere((b) => b.id == id);
+    if (idx != -1) {
+      _allBookings[idx] = _allBookings[idx].copyWith(status: status);
+      await LocalStorageService.saveBookings(_allBookings);
+      notifyListeners();
+    }
+  }
+
+  // ---------- OWNER STATS ----------
+  double get ownerTotalEarnings {
+    return ownerBookings
+        .where((b) => b.status == 'completed')
+        .fold(0.0, (sum, b) => sum + b.totalPrice);
+  }
+
+  int get ownerActiveBookings {
+    return ownerBookings
+        .where((b) => b.status == 'confirmed' || b.status == 'active')
+        .length;
+  }
+
+  // ---------- ADMIN STATS ----------
+  int get totalUsersCount => _allUsers.length;
+  int get totalSpotsCount => _parkingSpots.length;
+  int get activeBookingsCount =>
+      _allBookings.where((b) => b.status == 'confirmed' || b.status == 'active').length;
+  double get totalRevenue =>
+      _allBookings.fold(0.0, (sum, b) => sum + b.totalPrice);
 
   // ---------- BOOKING FLOW STATE ----------
   ParkingSpot? _selectedSpot;

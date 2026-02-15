@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_strings.dart';
 import '../../providers/app_provider.dart';
-import '../../services/mock_data_service.dart';
 import '../../widgets/parking_card.dart';
 import '../../widgets/real_map_widget.dart';
 import '../search/search_screen.dart';
@@ -12,6 +11,16 @@ import '../parking/parking_details_screen.dart';
 
 /// Map & Explore Home Screen with search bar, filters, and nearby parking
 /// Matches reference: map_&_explore_home/screen.png
+const List<String> _quickFilters = [
+  'All',
+  'Under \u20B950',
+  '\u2605 4.5+',
+  'Covered',
+  'EV Charging',
+  'CCTV',
+  '24/7',
+];
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -236,9 +245,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.symmetric(horizontal: 20),
-                        itemCount: MockDataService.quickFilters.length,
+                        itemCount: _quickFilters.length,
                         itemBuilder: (context, index) {
-                          final filter = MockDataService.quickFilters[index];
+                          final filter = _quickFilters[index];
                           final isSelected = provider.selectedFilter == filter;
                           return Padding(
                             padding: const EdgeInsets.only(right: 8),

@@ -5,11 +5,19 @@ import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_strings.dart';
 import '../../models/parking_spot.dart';
 import '../../providers/app_provider.dart';
-import '../../services/mock_data_service.dart';
 import '../payment/payment_screen.dart';
 
 /// Select booking time screen with calendar, time pickers, duration chips
 /// Matches reference: select_booking_time/screen.png
+const List<String> _popularDurations = [
+  '1 hr',
+  '2 hrs',
+  '4 hrs',
+  '6 hrs',
+  '12 hrs',
+  '1 day',
+];
+
 class SelectBookingTimeScreen extends StatefulWidget {
   final ParkingSpot spot;
 
@@ -219,7 +227,7 @@ class _SelectBookingTimeScreenState extends State<SelectBookingTimeScreen> {
                       height: 44,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
-                        itemCount: MockDataService.popularDurations.length,
+                        itemCount: _popularDurations.length,
                         itemBuilder: (context, index) {
                           final isSelected = _selectedDurationIndex == index;
                           return Padding(
@@ -246,7 +254,7 @@ class _SelectBookingTimeScreenState extends State<SelectBookingTimeScreen> {
                                   ),
                                 ),
                                 child: Text(
-                                  MockDataService.popularDurations[index],
+                                  _popularDurations[index],
                                   style: GoogleFonts.poppins(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
