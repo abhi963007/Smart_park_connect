@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../providers/app_provider.dart';
 import '../../models/user_model.dart';
+import '../../services/local_storage_service.dart';
 
 /// Admin dashboard screen with stats, user management, parking approvals
 class AdminDashboardScreen extends StatelessWidget {
@@ -101,6 +102,18 @@ class AdminDashboardScreen extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                     builder: (_) => const _ParkingApprovalScreen()),
+              ),
+            ),
+            const SizedBox(height: 10),
+            _buildActionTile(
+              Icons.business_center_outlined,
+              'Owner Approvals',
+              'Review and approve new owner registrations',
+              AppColors.accent,
+              () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => const _OwnerApprovalScreen()),
               ),
             ),
             const SizedBox(height: 10),
@@ -518,6 +531,236 @@ class _ParkingApprovalScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(color: AppColors.backgroundLight, borderRadius: BorderRadius.circular(8)),
       child: Text(label, style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w500, color: AppColors.textPrimary)),
+    );
+  }
+}
+
+/// Owner approval screen for admin - manage pending owner registrations
+class _OwnerApprovalScreen extends StatelessWidget {
+  const _OwnerApprovalScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<UserModel>>(
+      future: LocalStorageService.getPendingOwnerApprovals(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Scaffold(
+            backgroundColor: AppColors.backgroundLight,
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              elevation: 0,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+                onPressed: () => Navigator.pop(context),
+              ),
+              title: Text(
+                'Owner Approvals',
+                style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+              ),
+              centerTitle: true,
+            ),
+            body: const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+          );
+        }
+
+        final pendingOwners = snapshot.data ?? [];
+
+        return Scaffold(
+          backgroundColor: AppColors.backgroundLight,
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+              onPressed: () => Navigator.pop(context),
+            ),
+            title: Text(
+              'Owner Approvals (${pendingOwners.length})',
+              style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+            ),
+            centerTitle: true,
+          ),
+          body: pendingOwners.isEmpty
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.check_circle_outline, size: 64, color: AppColors.success.withOpacity(0.5)),
+                      const SizedBox(height: 16),
+                      Text('All caught up!', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
+                      const SizedBox(height: 8),
+                      Text('No pending owner approvals.', style: GoogleFonts.poppins(fontSize: 14, color: AppColors.textHint)),
+                    ],
+                  ),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.all(20),
+                  itemCount: pendingOwners.length,
+                  itemBuilder: (context, index) {
+                    final owner = pendingOwners[index];
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.cardBorder.withOpacity(0.5)),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 28,
+                                backgroundColor: AppColors.accent.withOpacity(0.1),
+                                child: Text(
+                                  owner.name.isNotEmpty ? owner.name[0].toUpperCase() : 'O',
+                                  style: GoogleFonts.poppins(
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.accent,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      owner.name,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.textPrimary,
+                                      ),
+                                    ),
+                                    Text(
+                                      owner.email,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 13,
+                                        color: AppColors.textSecondary,
+                                      ),
+                                    ),
+                                    if (owner.phone.isNotEmpty)
+                                      Text(
+                                        owner.phone,
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 12,
+                                          color: AppColors.textHint,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: AppColors.warning.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  'PENDING',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.warning,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          // Action buttons
+                          Row(
+                            children: [
+                              Expanded(
+                                child: OutlinedButton(
+                                  onPressed: () async {
+                                    final error = await LocalStorageService.rejectOwner(owner.id);
+                                    if (context.mounted) {
+                                      if (error != null) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text(error, style: GoogleFonts.poppins()),
+                                            backgroundColor: AppColors.error,
+                                          ),
+                                        );
+                                      } else {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text('${owner.name} registration rejected', style: GoogleFonts.poppins()),
+                                            backgroundColor: AppColors.error,
+                                            behavior: SnackBarBehavior.floating,
+                                          ),
+                                        );
+                                        // Refresh the screen
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(builder: (_) => const _OwnerApprovalScreen()),
+                                        );
+                                      }
+                                    }
+                                  },
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: AppColors.error,
+                                    side: const BorderSide(color: AppColors.error),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                    padding: const EdgeInsets.symmetric(vertical: 12),
+                                  ),
+                                  child: Text('Reject', style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 14)),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    final error = await LocalStorageService.approveOwner(owner.id);
+                                    if (context.mounted) {
+                                      if (error != null) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text(error, style: GoogleFonts.poppins()),
+                                            backgroundColor: AppColors.error,
+                                          ),
+                                        );
+                                      } else {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text('${owner.name} approved as owner!', style: GoogleFonts.poppins()),
+                                            backgroundColor: AppColors.success,
+                                            behavior: SnackBarBehavior.floating,
+                                          ),
+                                        );
+                                        // Refresh the screen
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(builder: (_) => const _OwnerApprovalScreen()),
+                                        );
+                                      }
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.success,
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                    padding: const EdgeInsets.symmetric(vertical: 12),
+                                    elevation: 0,
+                                  ),
+                                  child: Text('Approve', style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 14)),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+        );
+      },
     );
   }
 }

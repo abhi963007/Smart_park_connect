@@ -88,6 +88,73 @@ class LocalStorageService {
     return null; // Success
   }
 
+  /// Get all pending owner registrations for admin approval
+  static Future<List<UserModel>> getPendingOwnerApprovals() async {
+    final users = await getAllUsers();
+    return users.where((user) => 
+      user.role == UserRole.owner && 
+      user.approvalStatus == ApprovalStatus.pending
+    ).toList();
+  }
+
+  /// Approve an owner registration (admin action)
+  static Future<String?> approveOwner(String userId) async {
+    final users = await getAllUsers();
+    final userIndex = users.indexWhere((u) => u.id == userId);
+    
+    if (userIndex == -1) {
+      return 'User not found';
+    }
+
+    final user = users[userIndex];
+    if (user.role != UserRole.owner) {
+      return 'User is not an owner';
+    }
+
+    // Update user status to approved
+    final updatedUser = user.copyWith(
+      approvalStatus: ApprovalStatus.approved,
+      isVerifiedOwner: true,
+    );
+    users[userIndex] = updatedUser;
+
+    // Save updated users list
+    final prefs = await SharedPreferences.getInstance();
+    final usersJson = users.map((u) => u.toJsonString()).toList();
+    await prefs.setStringList(_usersKey, usersJson);
+
+    return null; // Success
+  }
+
+  /// Reject an owner registration (admin action)
+  static Future<String?> rejectOwner(String userId) async {
+    final users = await getAllUsers();
+    final userIndex = users.indexWhere((u) => u.id == userId);
+    
+    if (userIndex == -1) {
+      return 'User not found';
+    }
+
+    final user = users[userIndex];
+    if (user.role != UserRole.owner) {
+      return 'User is not an owner';
+    }
+
+    // Update user status to rejected
+    final updatedUser = user.copyWith(
+      approvalStatus: ApprovalStatus.rejected,
+      isVerifiedOwner: false,
+    );
+    users[userIndex] = updatedUser;
+
+    // Save updated users list
+    final prefs = await SharedPreferences.getInstance();
+    final usersJson = users.map((u) => u.toJsonString()).toList();
+    await prefs.setStringList(_usersKey, usersJson);
+
+    return null; // Success
+  }
+
   // ---------- LOGIN / LOGOUT ----------
 
   /// Authenticate user with email and password. Returns UserModel or null.

@@ -106,11 +106,16 @@ class _SignupScreenState extends State<SignupScreen> {
     if (error != null) {
       setState(() => _errorMessage = error);
     } else {
-      // Show success message
+      // Show success message based on role
+      final successMessage = _selectedRole == UserRole.owner
+          ? 'Owner registration submitted! Please wait for admin approval before you can add parking spots.'
+          : 'Account created successfully!';
+      
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Account created successfully!'),
+        SnackBar(
+          content: Text(successMessage),
           backgroundColor: AppColors.success,
+          duration: const Duration(seconds: 4),
         ),
       );
       

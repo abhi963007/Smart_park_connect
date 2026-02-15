@@ -3,6 +3,9 @@ import 'dart:convert';
 /// User roles in the system: Admin, User (driver), Owner
 enum UserRole { admin, user, owner }
 
+/// Owner approval status for admin verification
+enum ApprovalStatus { pending, approved, rejected }
+
 /// Model representing a user (driver or owner)
 class UserModel {
   final String id;
@@ -13,6 +16,7 @@ class UserModel {
   final String avatarUrl;
   final UserRole role;
   final bool isVerifiedOwner;
+  final ApprovalStatus approvalStatus;
   final int totalBookings;
   final int totalParkings;
   final double earnings;
@@ -26,6 +30,7 @@ class UserModel {
     this.avatarUrl = '',
     this.role = UserRole.user,
     this.isVerifiedOwner = false,
+    this.approvalStatus = ApprovalStatus.approved, // Users and admins are auto-approved
     this.totalBookings = 0,
     this.totalParkings = 0,
     this.earnings = 0.0,
@@ -41,6 +46,7 @@ class UserModel {
         'avatarUrl': avatarUrl,
         'role': role.name,
         'isVerifiedOwner': isVerifiedOwner,
+        'approvalStatus': approvalStatus.name,
         'totalBookings': totalBookings,
         'totalParkings': totalParkings,
         'earnings': earnings,
@@ -59,6 +65,10 @@ class UserModel {
           orElse: () => UserRole.user,
         ),
         isVerifiedOwner: json['isVerifiedOwner'] ?? false,
+        approvalStatus: ApprovalStatus.values.firstWhere(
+          (s) => s.name == json['approvalStatus'],
+          orElse: () => ApprovalStatus.approved, // Backward compatibility
+        ),
         totalBookings: json['totalBookings'] ?? 0,
         totalParkings: json['totalParkings'] ?? 0,
         earnings: (json['earnings'] ?? 0.0).toDouble(),
@@ -81,6 +91,7 @@ class UserModel {
     String? avatarUrl,
     UserRole? role,
     bool? isVerifiedOwner,
+    ApprovalStatus? approvalStatus,
     int? totalBookings,
     int? totalParkings,
     double? earnings,
@@ -94,6 +105,7 @@ class UserModel {
         avatarUrl: avatarUrl ?? this.avatarUrl,
         role: role ?? this.role,
         isVerifiedOwner: isVerifiedOwner ?? this.isVerifiedOwner,
+        approvalStatus: approvalStatus ?? this.approvalStatus,
         totalBookings: totalBookings ?? this.totalBookings,
         totalParkings: totalParkings ?? this.totalParkings,
         earnings: earnings ?? this.earnings,
@@ -108,6 +120,33 @@ class UserModel {
         return 'Parking Owner';
       case UserRole.user:
         return 'Driver';
+    }
+  }
+
+  /// Check if user is an approved owner who can perform owner actions
+  bool get canPerformOwnerActions {
+    return role == UserRole.owner && approvalStatus == ApprovalStatus.approved;
+  }
+
+  /// Check if user is pending admin approval
+  bool get isPendingApproval {
+    return role == UserRole.owner && approvalStatus == ApprovalStatus.pending;
+  }
+
+  /// Check if user registration was rejected
+  bool get isRejected {
+    return approvalStatus == ApprovalStatus.rejected;
+  }
+
+  /// Get approval status display text
+  String get approvalStatusText {
+    switch (approvalStatus) {
+      case ApprovalStatus.pending:
+        return 'Pending Admin Approval';
+      case ApprovalStatus.approved:
+        return 'Approved';
+      case ApprovalStatus.rejected:
+        return 'Registration Rejected';
     }
   }
 }

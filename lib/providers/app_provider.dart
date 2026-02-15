@@ -57,7 +57,10 @@ class AppProvider extends ChangeNotifier {
       email: email,
       password: password,
       role: role,
-      isVerifiedOwner: role == UserRole.owner,
+      isVerifiedOwner: false, // Always false until admin approval
+      approvalStatus: role == UserRole.owner 
+          ? ApprovalStatus.pending // Owners need admin approval
+          : ApprovalStatus.approved, // Users and admins are auto-approved
     );
     final error = await LocalStorageService.registerUser(user);
     if (error != null) return error;
@@ -162,10 +165,22 @@ class AppProvider extends ChangeNotifier {
   }
 
   /// Add a new parking spot (owner action)
-  Future<void> addParkingSpot(ParkingSpot spot) async {
+  Future<String?> addParkingSpot(ParkingSpot spot) async {
+    // Check if current user is an approved owner
+    if (!currentUser.canPerformOwnerActions) {
+      if (currentUser.isPendingApproval) {
+        return 'Your owner registration is pending admin approval. Please wait for approval before adding parking spots.';
+      } else if (currentUser.isRejected) {
+        return 'Your owner registration was rejected. Please contact support.';
+      } else {
+        return 'Only approved parking owners can add parking spots.';
+      }
+    }
+
     _parkingSpots.add(spot);
     await LocalStorageService.saveParkingSpots(_parkingSpots);
     notifyListeners();
+    return null; // Success
   }
 
   /// Approve a parking spot (admin action)

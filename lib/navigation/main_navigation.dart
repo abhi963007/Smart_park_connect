@@ -9,6 +9,7 @@ import '../screens/home/saved_screen.dart';
 import '../screens/booking/bookings_screen.dart';
 import '../screens/profile/profile_screen.dart';
 import '../screens/owner/owner_dashboard_screen.dart';
+import '../screens/owner/owner_pending_screen.dart';
 import '../screens/admin/admin_dashboard_screen.dart';
 
 /// Main navigation shell with role-based bottom navigation bar
@@ -33,7 +34,7 @@ class _MainNavigationState extends State<MainNavigation> {
   }
 
   /// Get screens based on user role
-  List<Widget> _getScreens(UserRole role) {
+  List<Widget> _getScreens(UserRole role, UserModel user) {
     switch (role) {
       case UserRole.admin:
         return const [
@@ -43,11 +44,15 @@ class _MainNavigationState extends State<MainNavigation> {
           ProfileScreen(),
         ];
       case UserRole.owner:
-        return const [
-          HomeScreen(),
-          OwnerDashboardScreen(),
-          BookingsScreen(),
-          ProfileScreen(),
+        // Check if owner is approved before allowing dashboard access
+        final dashboardScreen = user.canPerformOwnerActions 
+            ? const OwnerDashboardScreen()
+            : const OwnerPendingScreen();
+        return [
+          const HomeScreen(),
+          dashboardScreen,
+          const BookingsScreen(),
+          const ProfileScreen(),
         ];
       case UserRole.user:
       default:
@@ -91,8 +96,9 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<AppProvider>();
-    final role = provider.currentUser.role;
-    final screens = _getScreens(role);
+    final user = provider.currentUser;
+    final role = user.role;
+    final screens = _getScreens(role, user);
     final navItems = _getNavItems(role);
 
     // Clamp index to valid range
