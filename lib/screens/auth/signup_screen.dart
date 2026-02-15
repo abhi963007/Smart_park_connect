@@ -6,6 +6,8 @@ import '../../core/constants/app_strings.dart';
 import '../../models/user_model.dart';
 import '../../providers/app_provider.dart';
 import '../../navigation/main_navigation.dart';
+import '../../services/email_service.dart';
+import 'otp_verification_screen.dart';
 
 /// Signup screen with name, email, password, and role selection
 class SignupScreen extends StatefulWidget {
@@ -44,6 +46,52 @@ class _SignupScreenState extends State<SignupScreen> {
       _errorMessage = null;
     });
 
+    try {
+      // Send OTP to email first
+      final otpSent = await EmailService.sendOTP(
+        _emailController.text.trim(),
+        userName: _nameController.text.trim(),
+      );
+
+      setState(() => _isLoading = false);
+
+      if (otpSent) {
+        // Navigate to OTP verification screen
+        final verified = await Navigator.of(context).push<bool>(
+          MaterialPageRoute(
+            builder: (_) => OtpVerificationScreen(
+              email: _emailController.text.trim(),
+              userName: _nameController.text.trim(),
+              title: 'Verify Your Email',
+              subtitle: 'We\'ve sent a 6-digit code to verify your email address',
+              onVerificationSuccess: () {
+                // This will be called when OTP is verified
+              },
+            ),
+          ),
+        );
+
+        // If OTP was verified, complete registration
+        if (verified == true) {
+          await _completeRegistration();
+        }
+      } else {
+        setState(() => _errorMessage = 'Failed to send verification email. Please try again.');
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'An error occurred. Please try again.';
+      });
+    }
+  }
+
+  Future<void> _completeRegistration() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
     final error = await context.read<AppProvider>().register(
           name: _nameController.text.trim(),
           email: _emailController.text.trim(),
@@ -58,6 +106,14 @@ class _SignupScreenState extends State<SignupScreen> {
     if (error != null) {
       setState(() => _errorMessage = error);
     } else {
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Account created successfully!'),
+          backgroundColor: AppColors.success,
+        ),
+      );
+      
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const MainNavigation()),
         (route) => false,

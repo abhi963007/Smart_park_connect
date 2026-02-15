@@ -47,14 +47,45 @@ class LocalStorageService {
   static Future<void> updateUser(UserModel updatedUser) async {
     final prefs = await SharedPreferences.getInstance();
     final users = await getAllUsers();
-    final idx = users.indexWhere((u) => u.id == updatedUser.id);
-    if (idx != -1) {
-      users[idx] = updatedUser;
+    
+    // Find and update the user
+    final index = users.indexWhere((u) => u.id == updatedUser.id);
+    if (index != -1) {
+      users[index] = updatedUser;
+      
+      // Save updated users list
+      final usersJson = users.map((u) => u.toJsonString()).toList();
+      await prefs.setStringList(_usersKey, usersJson);
+      
+      // Update current user if it's the same user
+      final currentUserId = prefs.getString(_currentUserKey);
+      if (currentUserId == updatedUser.id) {
+        await prefs.setString(_currentUserKey, updatedUser.toJsonString());
+      }
     }
-    final jsonList = users.map((u) => u.toJsonString()).toList();
-    await prefs.setStringList(_usersKey, jsonList);
-    // Also update session if this is the current user
-    await saveSession(updatedUser);
+  }
+
+  /// Reset user password by email
+  static Future<String?> resetPassword(String email, String newPassword) async {
+    final users = await getAllUsers();
+    
+    // Find user by email
+    final userIndex = users.indexWhere((u) => u.email.toLowerCase() == email.toLowerCase());
+    if (userIndex == -1) {
+      return 'User not found';
+    }
+    
+    // Update password
+    final user = users[userIndex];
+    final updatedUser = user.copyWith(password: newPassword);
+    users[userIndex] = updatedUser;
+    
+    // Save updated users list
+    final prefs = await SharedPreferences.getInstance();
+    final usersJson = users.map((u) => u.toJsonString()).toList();
+    await prefs.setStringList(_usersKey, usersJson);
+    
+    return null; // Success
   }
 
   // ---------- LOGIN / LOGOUT ----------

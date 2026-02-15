@@ -105,6 +105,11 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Reset password for user with given email
+  Future<String?> resetPassword(String email, String newPassword) async {
+    return await LocalStorageService.resetPassword(email, newPassword);
+  }
+
   // ---------- ALL USERS (for admin) ----------
   List<UserModel> _allUsers = [];
   List<UserModel> get allUsers => _allUsers;

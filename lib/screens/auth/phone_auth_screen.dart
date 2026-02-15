@@ -6,6 +6,7 @@ import '../../core/constants/app_strings.dart';
 import '../../providers/app_provider.dart';
 import '../../navigation/main_navigation.dart';
 import 'signup_screen.dart';
+import 'forgot_password_screen.dart';
 
 /// Login screen with email + password (local prototype auth)
 class LoginScreen extends StatefulWidget {
@@ -301,7 +302,30 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                   ),
                 ),
-                const SizedBox(height: 28),
+                const SizedBox(height: 16),
+
+                // Forgot Password link
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const ForgotPasswordScreen(),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      'Forgot Password?',
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
 
                 // OR divider
                 Row(
