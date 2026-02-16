@@ -23,20 +23,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   // Onboarding data
   final List<_OnboardingData> _pages = [
     _OnboardingData(
-      icon: Icons.map_outlined,
-      iconBg: const Color(0xFF1B5E5E),
+      imagePath: 'assets/images/onboarding_1.png',
       title: AppStrings.onboardingTitle1,
       description: AppStrings.onboardingDesc1,
     ),
     _OnboardingData(
-      icon: Icons.payment_outlined,
-      iconBg: const Color(0xFF4A148C),
+      imagePath: 'assets/images/onboarding_2.png',
       title: AppStrings.onboardingTitle2,
       description: AppStrings.onboardingDesc2,
     ),
     _OnboardingData(
-      icon: Icons.monetization_on_outlined,
-      iconBg: const Color(0xFF1B5E20),
+      imagePath: 'assets/images/onboarding_3.png',
       title: AppStrings.onboardingTitle3,
       description: AppStrings.onboardingDesc3,
     ),
@@ -207,97 +204,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Illustration container with circular purple bg
-          Container(
-            width: 260,
-            height: 260,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.primary.withOpacity(0.06),
-            ),
-            child: Center(
-              child: Container(
-                width: 200,
-                height: 200,
-                decoration: BoxDecoration(
-                  color: data.iconBg,
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: data.iconBg.withOpacity(0.3),
-                      blurRadius: 30,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
-                ),
-                child: Stack(
-                  children: [
-                    // Map-like illustration
-                    Center(
-                      child: Icon(
-                        data.icon,
-                        size: 80,
-                        color: Colors.white.withOpacity(0.9),
-                      ),
-                    ),
-                    // P badges
-                    Positioned(
-                      top: 20,
-                      left: 20,
-                      child: _buildPBadge(28),
-                    ),
-                    Positioned(
-                      bottom: 30,
-                      right: 20,
-                      child: _buildPBadge(36),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+          // Illustration image
+          Image.asset(
+            data.imagePath,
+            width: 470,
+            height: 470,
+            fit: BoxFit.contain,
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildPBadge(double size) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: AppColors.primary,
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withOpacity(0.4),
-            blurRadius: 8,
-          ),
-        ],
-      ),
-      child: Center(
-        child: Text(
-          'P',
-          style: GoogleFonts.poppins(
-            fontSize: size * 0.45,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-          ),
-        ),
       ),
     );
   }
 }
 
 class _OnboardingData {
-  final IconData icon;
-  final Color iconBg;
+  final String imagePath;
   final String title;
   final String description;
 
   const _OnboardingData({
-    required this.icon,
-    required this.iconBg,
+    required this.imagePath,
     required this.title,
     required this.description,
   });

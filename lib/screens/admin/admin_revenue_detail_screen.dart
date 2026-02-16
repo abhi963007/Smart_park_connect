@@ -43,7 +43,7 @@ class AdminRevenueDetailScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Revenue', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white.withOpacity(0.85))),
+                        Text('Revenue', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white.withValues(alpha: 0.85))),
                         const SizedBox(height: 4),
                         Text('\u20B9${totalRev.toStringAsFixed(0)}',
                             style: GoogleFonts.poppins(fontSize: 44, fontWeight: FontWeight.w800, color: Colors.white, height: 1)),
@@ -123,9 +123,9 @@ class AdminRevenueDetailScreen extends StatelessWidget {
   static Widget _headerChip(IconData icon, String text) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(20)),
+      decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(20)),
       child: Row(mainAxisSize: MainAxisSize.min, children: [
-        Icon(icon, size: 13, color: Colors.white.withOpacity(0.9)),
+        Icon(icon, size: 13, color: Colors.white.withValues(alpha: 0.9)),
         const SizedBox(width: 5),
         Text(text, style: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.white)),
       ]),
@@ -139,13 +139,13 @@ class AdminRevenueDetailScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 4))],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4))],
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Container(
           width: 40, height: 40,
           decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [color.withOpacity(0.15), color.withOpacity(0.05)]),
+            gradient: LinearGradient(colors: [color.withValues(alpha: 0.15), color.withValues(alpha: 0.05)]),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(icon, color: color, size: 20),
@@ -168,10 +168,10 @@ class AdminRevenueDetailScreen extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 32),
       decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 3))]),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 3))]),
       child: Column(children: [
-        Container(width: 64, height: 64, decoration: BoxDecoration(color: AppColors.warning.withOpacity(0.08), shape: BoxShape.circle),
-          child: Icon(icon, size: 32, color: AppColors.warning.withOpacity(0.4))),
+        Container(width: 64, height: 64, decoration: BoxDecoration(color: AppColors.warning.withValues(alpha: 0.08), shape: BoxShape.circle),
+          child: Icon(icon, size: 32, color: AppColors.warning.withValues(alpha: 0.4))),
         const SizedBox(height: 12),
         Text(title, style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
         const SizedBox(height: 4),
@@ -189,14 +189,14 @@ class AdminRevenueDetailScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 3))],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 3))],
       ),
       child: Row(children: [
         // Rank badge
         Container(
           width: 36, height: 36,
           decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [rc.withOpacity(0.2), rc.withOpacity(0.08)]),
+            gradient: LinearGradient(colors: [rc.withValues(alpha: 0.2), rc.withValues(alpha: 0.08)]),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Center(child: Text('#$rank', style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w800, color: rc))),
@@ -212,7 +212,7 @@ class AdminRevenueDetailScreen extends StatelessWidget {
         ])),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(color: AppColors.success.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+          decoration: BoxDecoration(color: AppColors.success.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
           child: Text('\u20B9${(data['revenue'] as double).toStringAsFixed(0)}',
               style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.success)),
         ),
@@ -228,13 +228,13 @@ class AdminRevenueDetailScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 8, offset: const Offset(0, 2))],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 8, offset: const Offset(0, 2))],
       ),
       child: Row(children: [
         Container(
           padding: const EdgeInsets.all(2),
           decoration: BoxDecoration(shape: BoxShape.circle,
-            gradient: LinearGradient(colors: [AppColors.success, AppColors.success.withOpacity(0.4)])),
+            gradient: LinearGradient(colors: [AppColors.success, AppColors.success.withValues(alpha: 0.4)])),
           child: const CircleAvatar(radius: 16, backgroundColor: Colors.white,
             child: Icon(Icons.check, size: 16, color: AppColors.success)),
         ),

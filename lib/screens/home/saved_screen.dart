@@ -39,7 +39,7 @@ class SavedScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.favorite_border,
-                      size: 64, color: AppColors.textHint.withOpacity(0.4)),
+                      size: 64, color: AppColors.textHint.withValues(alpha: 0.4)),
                   const SizedBox(height: 16),
                   Text(
                     'No saved spots yet',

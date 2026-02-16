@@ -56,6 +56,7 @@ class _SignupScreenState extends State<SignupScreen> {
       setState(() => _isLoading = false);
 
       if (otpSent) {
+        if (!mounted) return;
         // Navigate to OTP verification screen
         final verified = await Navigator.of(context).push<bool>(
           MaterialPageRoute(
@@ -63,7 +64,8 @@ class _SignupScreenState extends State<SignupScreen> {
               email: _emailController.text.trim(),
               userName: _nameController.text.trim(),
               title: 'Verify Your Email',
-              subtitle: 'We\'ve sent a 6-digit code to verify your email address',
+              subtitle:
+                  'We\'ve sent a 6-digit code to verify your email address',
               onVerificationSuccess: () {
                 // This will be called when OTP is verified
               },
@@ -76,7 +78,8 @@ class _SignupScreenState extends State<SignupScreen> {
           await _completeRegistration();
         }
       } else {
-        setState(() => _errorMessage = 'Failed to send verification email. Please try again.');
+        setState(() => _errorMessage =
+            'Failed to send verification email. Please try again.');
       }
     } catch (e) {
       setState(() {
@@ -110,7 +113,7 @@ class _SignupScreenState extends State<SignupScreen> {
       final successMessage = _selectedRole == UserRole.owner
           ? 'Owner registration submitted! Please wait for admin approval before you can add parking spots.'
           : 'Account created successfully!';
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(successMessage),
@@ -118,7 +121,7 @@ class _SignupScreenState extends State<SignupScreen> {
           duration: const Duration(seconds: 4),
         ),
       );
-      
+
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const MainNavigation()),
         (route) => false,
@@ -170,10 +173,10 @@ class _SignupScreenState extends State<SignupScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: AppColors.error.withOpacity(0.1),
+                      color: AppColors.error.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
-                      border:
-                          Border.all(color: AppColors.error.withOpacity(0.3)),
+                      border: Border.all(
+                          color: AppColors.error.withValues(alpha: 0.3)),
                     ),
                     child: Row(
                       children: [
@@ -419,7 +422,7 @@ class _SignupScreenState extends State<SignupScreen> {
           padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
             color: isSelected
-                ? AppColors.primary.withOpacity(0.08)
+                ? AppColors.primary.withValues(alpha: 0.08)
                 : Colors.white,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
@@ -478,8 +481,7 @@ class _SignupScreenState extends State<SignupScreen> {
         borderRadius: BorderRadius.circular(16),
         borderSide: const BorderSide(color: AppColors.primary, width: 2),
       ),
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
     );
   }
 }

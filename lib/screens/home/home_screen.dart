@@ -113,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     borderRadius: BorderRadius.circular(28),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.black.withOpacity(0.08),
+                                        color: Colors.black.withValues(alpha: 0.08),
                                         blurRadius: 16,
                                         offset: const Offset(0, 4),
                                       ),
@@ -165,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.15),
+                      color: Colors.black.withValues(alpha: 0.15),
                       blurRadius: 25,
                       offset: const Offset(0, -8),
                       spreadRadius: 0,
@@ -299,11 +299,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           decoration: BoxDecoration(
                             color: AppColors.backgroundLight,
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: AppColors.cardBorder.withOpacity(0.5)),
+                            border: Border.all(color: AppColors.cardBorder.withValues(alpha: 0.5)),
                           ),
                           child: Column(
                             children: [
-                              Icon(Icons.local_parking_rounded, size: 48, color: AppColors.textHint.withOpacity(0.5)),
+                              Icon(Icons.local_parking_rounded, size: 48, color: AppColors.textHint.withValues(alpha: 0.5)),
                               const SizedBox(height: 12),
                               Text(
                                 'No parking spots available',

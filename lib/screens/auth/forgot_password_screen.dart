@@ -20,7 +20,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  
+
   bool _isLoading = false;
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
@@ -57,8 +57,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     try {
       // Check if email exists in registered users
       final users = await LocalStorageService.getAllUsers();
-      final user = users.where((u) => u.email.toLowerCase() == _emailController.text.trim().toLowerCase()).firstOrNull;
-      
+      final user = users
+          .where((u) =>
+              u.email.toLowerCase() ==
+              _emailController.text.trim().toLowerCase())
+          .firstOrNull;
+
       if (user == null) {
         setState(() {
           _isLoading = false;
@@ -76,6 +80,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       setState(() => _isLoading = false);
 
       if (otpSent) {
+        if (!mounted) return;
         // Navigate to OTP verification screen
         final verified = await Navigator.of(context).push<bool>(
           MaterialPageRoute(
@@ -83,7 +88,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               email: _emailController.text.trim(),
               userName: user.name,
               title: 'Reset Password',
-              subtitle: 'Enter the 6-digit code sent to your email to reset your password',
+              subtitle:
+                  'Enter the 6-digit code sent to your email to reset your password',
               onVerificationSuccess: () {
                 // This will be called when OTP is verified
               },
@@ -100,7 +106,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           });
         }
       } else {
-        setState(() => _errorMessage = 'Failed to send reset code. Please try again.');
+        setState(() =>
+            _errorMessage = 'Failed to send reset code. Please try again.');
       }
     } catch (e) {
       setState(() {
@@ -120,10 +127,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
     try {
       final error = await context.read<AppProvider>().resetPassword(
-        _verifiedEmail!,
-        _newPasswordController.text,
-      );
+            _verifiedEmail!,
+            _newPasswordController.text,
+          );
 
+      if (!mounted) return;
       setState(() => _isLoading = false);
 
       if (error != null) {
@@ -136,8 +144,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             backgroundColor: AppColors.success,
           ),
         );
-        
-        Navigator.of(context).pop();
+
+        if (mounted) Navigator.of(context).pop();
       }
     } catch (e) {
       setState(() {
@@ -174,257 +182,285 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             key: _formKey,
             child: ConstrainedBox(
               constraints: BoxConstraints(
-                minHeight: MediaQuery.of(context).size.height - 
-                          MediaQuery.of(context).padding.top - 
-                          MediaQuery.of(context).padding.bottom - 
-                          kToolbarHeight - 48, // Account for padding and app bar
+                minHeight: MediaQuery.of(context).size.height -
+                    MediaQuery.of(context).padding.top -
+                    MediaQuery.of(context).padding.bottom -
+                    kToolbarHeight -
+                    48, // Account for padding and app bar
               ),
               child: IntrinsicHeight(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                const SizedBox(height: 20),
-                
-                // Lock icon
-                Center(
-                  child: Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.lock_reset_outlined,
-                      size: 40,
-                      color: AppColors.primary,
-                    ),
-                  ),
-                ),
-                
-                const SizedBox(height: 32),
-                
-                if (!_isEmailVerified) ...[
-                  // Email verification step
-                  Text(
-                    'Forgot Password?',
-                    style: GoogleFonts.poppins(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 8),
-                  
-                  Text(
-                    'Enter your email address and we\'ll send you a verification code to reset your password.',
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                      height: 1.5,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 32),
-                  
-                  // Email field
-                  TextFormField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    style: GoogleFonts.poppins(fontSize: 14),
-                    decoration: InputDecoration(
-                      labelText: 'Email Address',
-                      labelStyle: GoogleFonts.poppins(color: AppColors.textSecondary),
-                      prefixIcon: const Icon(Icons.email_outlined, color: AppColors.primary),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.cardBorder),
+                    const SizedBox(height: 20),
+
+                    // Lock icon
+                    Center(
+                      child: Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.lock_reset_outlined,
+                          size: 40,
+                          color: AppColors.primary,
+                        ),
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                    ),
+
+                    const SizedBox(height: 32),
+
+                    if (!_isEmailVerified) ...[
+                      // Email verification step
+                      Text(
+                        'Forgot Password?',
+                        style: GoogleFonts.poppins(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimary,
+                        ),
                       ),
-                      filled: true,
-                      fillColor: AppColors.backgroundLight,
-                    ),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Email is required';
-                      }
-                      final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-                      if (!emailRegex.hasMatch(value.trim())) {
-                        return 'Enter a valid email address';
-                      }
-                      return null;
-                    },
-                  ),
-                ] else ...[
-                  // Password reset step
-                  Text(
-                    'Create New Password',
-                    style: GoogleFonts.poppins(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 8),
-                  
-                  Text(
-                    'Your email has been verified. Please create a new password for your account.',
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                      height: 1.5,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 32),
-                  
-                  // New password field
-                  TextFormField(
-                    controller: _newPasswordController,
-                    obscureText: _obscurePassword,
-                    style: GoogleFonts.poppins(fontSize: 14),
-                    decoration: InputDecoration(
-                      labelText: 'New Password',
-                      labelStyle: GoogleFonts.poppins(color: AppColors.textSecondary),
-                      prefixIcon: const Icon(Icons.lock_outlined, color: AppColors.primary),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+
+                      const SizedBox(height: 8),
+
+                      Text(
+                        'Enter your email address and we\'ll send you a verification code to reset your password.',
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
                           color: AppColors.textSecondary,
+                          height: 1.5,
                         ),
-                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                       ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.cardBorder),
+
+                      const SizedBox(height: 32),
+
+                      // Email field
+                      TextFormField(
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        style: GoogleFonts.poppins(fontSize: 14),
+                        decoration: InputDecoration(
+                          labelText: 'Email Address',
+                          labelStyle: GoogleFonts.poppins(
+                              color: AppColors.textSecondary),
+                          prefixIcon: const Icon(Icons.email_outlined,
+                              color: AppColors.primary),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide:
+                                const BorderSide(color: AppColors.cardBorder),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                                color: AppColors.primary, width: 2),
+                          ),
+                          filled: true,
+                          fillColor: AppColors.backgroundLight,
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Email is required';
+                          }
+                          final emailRegex =
+                              RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                          if (!emailRegex.hasMatch(value.trim())) {
+                            return 'Enter a valid email address';
+                          }
+                          return null;
+                        },
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                    ] else ...[
+                      // Password reset step
+                      Text(
+                        'Create New Password',
+                        style: GoogleFonts.poppins(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimary,
+                        ),
                       ),
-                      filled: true,
-                      fillColor: AppColors.backgroundLight,
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Password is required';
-                      }
-                      if (value.length < 6) {
-                        return 'Password must be at least 6 characters';
-                      }
-                      return null;
-                    },
-                  ),
-                  
-                  const SizedBox(height: 16),
-                  
-                  // Confirm password field
-                  TextFormField(
-                    controller: _confirmPasswordController,
-                    obscureText: _obscureConfirm,
-                    style: GoogleFonts.poppins(fontSize: 14),
-                    decoration: InputDecoration(
-                      labelText: 'Confirm New Password',
-                      labelStyle: GoogleFonts.poppins(color: AppColors.textSecondary),
-                      prefixIcon: const Icon(Icons.lock_outlined, color: AppColors.primary),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscureConfirm ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+
+                      const SizedBox(height: 8),
+
+                      Text(
+                        'Your email has been verified. Please create a new password for your account.',
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
                           color: AppColors.textSecondary,
+                          height: 1.5,
                         ),
-                        onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
                       ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.cardBorder),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.primary, width: 2),
-                      ),
-                      filled: true,
-                      fillColor: AppColors.backgroundLight,
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please confirm your password';
-                      }
-                      if (value != _newPasswordController.text) {
-                        return 'Passwords do not match';
-                      }
-                      return null;
-                    },
-                  ),
-                ],
-                
-                const SizedBox(height: 20),
-                
-                // Error message
-                if (_errorMessage != null)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: AppColors.error.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.error_outline, color: AppColors.error, size: 20),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            _errorMessage!,
-                            style: GoogleFonts.poppins(
-                              fontSize: 13,
-                              color: AppColors.error,
+
+                      const SizedBox(height: 32),
+
+                      // New password field
+                      TextFormField(
+                        controller: _newPasswordController,
+                        obscureText: _obscurePassword,
+                        style: GoogleFonts.poppins(fontSize: 14),
+                        decoration: InputDecoration(
+                          labelText: 'New Password',
+                          labelStyle: GoogleFonts.poppins(
+                              color: AppColors.textSecondary),
+                          prefixIcon: const Icon(Icons.lock_outlined,
+                              color: AppColors.primary),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePassword
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined,
+                              color: AppColors.textSecondary,
                             ),
+                            onPressed: () => setState(
+                                () => _obscurePassword = !_obscurePassword),
                           ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide:
+                                const BorderSide(color: AppColors.cardBorder),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                                color: AppColors.primary, width: 2),
+                          ),
+                          filled: true,
+                          fillColor: AppColors.backgroundLight,
                         ),
-                      ],
-                    ),
-                  ),
-                
-                const Expanded(child: SizedBox()),
-                
-                // Action button
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : (_isEmailVerified ? _resetPassword : _sendResetOTP),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Password is required';
+                          }
+                          if (value.length < 6) {
+                            return 'Password must be at least 6 characters';
+                          }
+                          return null;
+                        },
                       ),
-                      elevation: 0,
-                    ),
-                    child: _isLoading
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
+
+                      const SizedBox(height: 16),
+
+                      // Confirm password field
+                      TextFormField(
+                        controller: _confirmPasswordController,
+                        obscureText: _obscureConfirm,
+                        style: GoogleFonts.poppins(fontSize: 14),
+                        decoration: InputDecoration(
+                          labelText: 'Confirm New Password',
+                          labelStyle: GoogleFonts.poppins(
+                              color: AppColors.textSecondary),
+                          prefixIcon: const Icon(Icons.lock_outlined,
+                              color: AppColors.primary),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscureConfirm
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined,
+                              color: AppColors.textSecondary,
                             ),
-                          )
-                        : Text(
-                            _isEmailVerified ? 'Reset Password' : 'Send Verification Code',
-                            style: GoogleFonts.poppins(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            onPressed: () => setState(
+                                () => _obscureConfirm = !_obscureConfirm),
                           ),
-                  ),
-                ),
-                
-                const SizedBox(height: 20),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide:
+                                const BorderSide(color: AppColors.cardBorder),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                                color: AppColors.primary, width: 2),
+                          ),
+                          filled: true,
+                          fillColor: AppColors.backgroundLight,
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please confirm your password';
+                          }
+                          if (value != _newPasswordController.text) {
+                            return 'Passwords do not match';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+
+                    const SizedBox(height: 20),
+
+                    // Error message
+                    if (_errorMessage != null)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: AppColors.error.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.error_outline,
+                                color: AppColors.error, size: 20),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                _errorMessage!,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 13,
+                                  color: AppColors.error,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    const Expanded(child: SizedBox()),
+
+                    // Action button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: _isLoading
+                            ? null
+                            : (_isEmailVerified
+                                ? _resetPassword
+                                : _sendResetOTP),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: _isLoading
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Text(
+                                _isEmailVerified
+                                    ? 'Reset Password'
+                                    : 'Send Verification Code',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
