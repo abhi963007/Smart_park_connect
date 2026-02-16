@@ -824,7 +824,7 @@ class _AddParkingScreenState extends State<_AddParkingScreen> {
       amenities: _selectedAmenities.toList(),
       tags: [_selectedType.toUpperCase()],
       imageUrl: _pickedImage?.path ?? '',
-      galleryImages: [],
+      galleryImages: _pickedImage?.path != null ? [_pickedImage!.path] : [],
       ownerName: user.name,
       ownerAvatar: '',
       description: _descController.text.trim(),

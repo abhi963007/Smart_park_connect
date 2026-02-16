@@ -9,6 +9,9 @@ import '../screens/home/saved_screen.dart';
 import '../screens/booking/bookings_screen.dart';
 import '../screens/profile/profile_screen.dart';
 import '../screens/owner/owner_dashboard_screen.dart';
+import '../screens/owner/owner_home_screen.dart';
+import '../screens/owner/owner_bookings_screen.dart';
+import '../screens/owner/owner_profile_screen.dart';
 import '../screens/owner/owner_pending_screen.dart';
 import '../screens/admin/admin_dashboard_screen.dart';
 
@@ -49,10 +52,10 @@ class _MainNavigationState extends State<MainNavigation> {
             ? const OwnerDashboardScreen()
             : const OwnerPendingScreen();
         return [
-          const HomeScreen(),
+          const OwnerHomeScreen(),
           dashboardScreen,
-          const BookingsScreen(),
-          const ProfileScreen(),
+          const OwnerBookingsScreen(),
+          const OwnerProfileScreen(),
         ];
       case UserRole.user:
         return const [
@@ -77,7 +80,7 @@ class _MainNavigationState extends State<MainNavigation> {
         ];
       case UserRole.owner:
         return [
-          _NavItemData(Icons.explore_outlined, Icons.explore, 'Explore'),
+          _NavItemData(Icons.home_outlined, Icons.home, 'Home'),
           _NavItemData(Icons.dashboard_outlined, Icons.dashboard, 'Dashboard'),
           _NavItemData(
               Icons.calendar_today_outlined, Icons.calendar_today, 'Bookings'),

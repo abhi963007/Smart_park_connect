@@ -3,14 +3,15 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_strings.dart';
 import '../../models/parking_spot.dart';
 import '../../models/user_model.dart';
 import '../../providers/app_provider.dart';
 import '../../widgets/map_pin.dart';
+import '../../widgets/smart_image.dart';
 import '../booking/select_booking_time_screen.dart';
+import '../chat/chat_screen.dart';
 
 /// Parking spot details screen with image gallery, amenities, host info, map
 /// Matches reference: parking_spot_details/screen.png
@@ -52,27 +53,28 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                     // Image carousel
                     SizedBox(
                       height: 280,
-                      child: PageView.builder(
-                        controller: _imagePageController,
-                        itemCount: spot.galleryImages.length,
-                        onPageChanged: (index) {
-                          setState(() => _currentImageIndex = index);
-                        },
-                        itemBuilder: (context, index) {
-                          return Image.network(
-                            spot.galleryImages[index],
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            errorBuilder: (_, __, ___) => Container(
-                              color: AppColors.shimmerBase,
-                              child: const Center(
-                                child: Icon(Icons.local_parking,
-                                    size: 60, color: AppColors.textHint),
-                              ),
+                      child: spot.galleryImages.isNotEmpty
+                          ? PageView.builder(
+                              controller: _imagePageController,
+                              itemCount: spot.galleryImages.length,
+                              onPageChanged: (index) {
+                                setState(() => _currentImageIndex = index);
+                              },
+                              itemBuilder: (context, index) {
+                                return SmartImage(
+                                  imageSource: spot.galleryImages[index],
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: 280,
+                                );
+                              },
+                            )
+                          : SmartImage(
+                              imageSource: spot.imageUrl,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: 280,
                             ),
-                          );
-                        },
-                      ),
                     ),
                     // Top overlay buttons
                     Positioned(
@@ -115,27 +117,28 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                         ],
                       ),
                     ),
-                    // Image counter
-                    Positioned(
-                      bottom: 12,
-                      right: 16,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.black54,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          '${_currentImageIndex + 1}/${spot.galleryImages.length}',
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
+                    // Image counter (only show if multiple images)
+                    if (spot.galleryImages.length > 1)
+                      Positioned(
+                        bottom: 12,
+                        right: 16,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.black54,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            '${_currentImageIndex + 1}/${spot.galleryImages.length}',
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -247,26 +250,38 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                                 ],
                               ),
                             ),
-                            OutlinedButton(
-                              onPressed: () {},
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: AppColors.primary,
-                                side: const BorderSide(
-                                    color: AppColors.primary, width: 1.5),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
+                            if (context.read<AppProvider>().currentUser.id !=
+                                spot.ownerId)
+                              OutlinedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => ChatScreen(
+                                        otherUserId: spot.ownerId,
+                                        otherUserName: spot.ownerName,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: AppColors.primary,
+                                  side: const BorderSide(
+                                      color: AppColors.primary, width: 1.5),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 8),
                                 ),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 8),
-                              ),
-                              child: Text(
-                                AppStrings.message,
-                                style: GoogleFonts.poppins(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
+                                child: Text(
+                                  AppStrings.message,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
-                            ),
                           ],
                         ),
                       ),
@@ -282,12 +297,11 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      Row(
+                      Wrap(
+                        spacing: 20,
+                        runSpacing: 12,
                         children: spot.amenities.map((amenity) {
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 20),
-                            child: _buildAmenityItem(amenity),
-                          );
+                          return _buildAmenityItem(amenity);
                         }).toList(),
                       ),
                       const SizedBox(height: 24),
@@ -336,30 +350,13 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                       const SizedBox(height: 24),
 
                       // Location section
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            AppStrings.location,
-                            style: GoogleFonts.poppins(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () =>
-                                _openInMaps(spot.latitude, spot.longitude),
-                            child: Text(
-                              AppStrings.openInMaps,
-                              style: GoogleFonts.poppins(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: AppColors.primary,
-                              ),
-                            ),
-                          ),
-                        ],
+                      Text(
+                        AppStrings.location,
+                        style: GoogleFonts.poppins(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
                       ),
                       const SizedBox(height: 12),
                       // Real map with spot location
@@ -557,32 +554,6 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
         ],
       ),
     );
-  }
-
-  Future<void> _openInMaps(double lat, double lng) async {
-    final googleMapsUrl =
-        Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
-    final geoUrl = Uri.parse('geo:$lat,$lng?q=$lat,$lng');
-
-    try {
-      if (await canLaunchUrl(geoUrl)) {
-        await launchUrl(geoUrl);
-      } else if (await canLaunchUrl(googleMapsUrl)) {
-        await launchUrl(googleMapsUrl, mode: LaunchMode.externalApplication);
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Could not open maps')),
-          );
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error opening maps: $e')),
-        );
-      }
-    }
   }
 
   Widget _buildCircleButton(IconData icon, VoidCallback onTap, {Color? color}) {

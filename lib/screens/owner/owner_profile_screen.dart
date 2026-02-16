@@ -8,20 +8,19 @@ import '../../models/user_model.dart';
 import '../../providers/app_provider.dart';
 import '../../navigation/main_navigation.dart';
 import '../auth/phone_auth_screen.dart' show LoginScreen;
-import '../home/saved_screen.dart';
-import 'payment_methods_screen.dart';
-import 'edit_profile_screen.dart';
+import '../profile/edit_profile_screen.dart';
 import '../chat/conversations_screen.dart';
 
-/// User Profile & Settings screen with avatar, activity, preferences, system
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+/// Owner-specific profile screen with owner-relevant menu items
+class OwnerProfileScreen extends StatelessWidget {
+  const OwnerProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<AppProvider>();
     final user = provider.currentUser;
-    final rc = _roleBadgeColor(user.role);
+    final mySpots = provider.myParkingSpots;
+    final earnings = provider.ownerTotalEarnings;
 
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
@@ -43,8 +42,8 @@ class ProfileScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: LinearGradient(colors: [
-                          AppColors.primary.withValues(alpha: 0.18),
-                          AppColors.primary.withValues(alpha: 0.06)
+                          AppColors.success.withValues(alpha: 0.18),
+                          AppColors.success.withValues(alpha: 0.06)
                         ]),
                       ),
                       padding: const EdgeInsets.all(4),
@@ -58,36 +57,37 @@ class ProfileScreen extends StatelessWidget {
                             ? Text(
                                 user.name.isNotEmpty
                                     ? user.name[0].toUpperCase()
-                                    : 'U',
+                                    : 'O',
                                 style: GoogleFonts.poppins(
                                     fontSize: 40,
                                     fontWeight: FontWeight.w700,
-                                    color: AppColors.primary))
+                                    color: AppColors.success))
                             : null,
                       ),
                     ),
                     Positioned(
-                        bottom: 4,
-                        right: 4,
-                        child: Container(
-                          width: 34,
-                          height: 34,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                                colors: [AppColors.primary, AppColors.accent]),
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 2.5),
-                            boxShadow: [
-                              BoxShadow(
-                                  color:
-                                      AppColors.primary.withValues(alpha: 0.3),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2))
-                            ],
-                          ),
-                          child: const Icon(Icons.edit,
-                              color: Colors.white, size: 15),
-                        )),
+                      bottom: 4,
+                      right: 4,
+                      child: Container(
+                        width: 34,
+                        height: 34,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                              colors: [AppColors.success, AppColors.accent]),
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 2.5),
+                          boxShadow: [
+                            BoxShadow(
+                                color:
+                                    AppColors.success.withValues(alpha: 0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2))
+                          ],
+                        ),
+                        child: const Icon(Icons.edit,
+                            color: Colors.white, size: 15),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -104,51 +104,75 @@ class ProfileScreen extends StatelessWidget {
                         fontSize: 13, color: AppColors.textSecondary)),
               ],
               const SizedBox(height: 10),
-              // Role badge
+              // Owner badge
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(colors: [
-                    rc.withValues(alpha: 0.12),
-                    rc.withValues(alpha: 0.05)
+                    AppColors.success.withValues(alpha: 0.12),
+                    AppColors.success.withValues(alpha: 0.05)
                   ]),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: rc.withValues(alpha: 0.25)),
+                  border: Border.all(
+                      color: AppColors.success.withValues(alpha: 0.25)),
                 ),
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  Icon(_roleIcon(user.role), color: rc, size: 14),
+                  const Icon(Icons.home_work,
+                      color: AppColors.success, size: 14),
                   const SizedBox(width: 5),
-                  Text(user.roleDisplayName,
+                  Text('Parking Owner',
                       style: GoogleFonts.poppins(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
-                          color: rc,
+                          color: AppColors.success,
                           letterSpacing: 0.5)),
                 ]),
               ),
+              const SizedBox(height: 16),
+
+              // Quick stats row
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    _buildMiniStat(
+                        '${mySpots.length}', 'Spaces', AppColors.primary),
+                    const SizedBox(width: 12),
+                    _buildMiniStat(
+                        '\u20B9${earnings.toStringAsFixed(0)}',
+                        'Earnings',
+                        AppColors.success),
+                    const SizedBox(width: 12),
+                    _buildMiniStat(
+                        '${provider.ownerActiveBookings}',
+                        'Active',
+                        AppColors.accent),
+                  ],
+                ),
+              ),
               const SizedBox(height: 28),
 
-              // ── MY ACTIVITY ──
-              _sectionHeader(AppStrings.myActivity),
+              // ── MANAGE ──
+              _sectionHeader('MANAGE'),
               _settingsGroup([
                 _SettingItem(
-                    icon: Icons.calendar_today_outlined,
+                    icon: Icons.dashboard_outlined,
                     iconColor: AppColors.primary,
-                    title: AppStrings.myBookings,
-                    onTap: () => Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (_) =>
-                                const MainNavigation(initialIndex: 2)),
-                        (r) => false)),
-                _SettingItem(
-                    icon: Icons.local_parking_outlined,
-                    iconColor: AppColors.accent,
-                    title: AppStrings.myParkings,
+                    title: 'Dashboard',
                     onTap: () => Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
                             builder: (_) =>
                                 const MainNavigation(initialIndex: 1)),
+                        (r) => false)),
+                _SettingItem(
+                    icon: Icons.calendar_today_outlined,
+                    iconColor: AppColors.accent,
+                    title: 'Spot Bookings',
+                    onTap: () => Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                            builder: (_) =>
+                                const MainNavigation(initialIndex: 2)),
                         (r) => false)),
                 _SettingItem(
                     icon: Icons.chat_bubble_outline,
@@ -159,34 +183,23 @@ class ProfileScreen extends StatelessWidget {
               ]),
               const SizedBox(height: 14),
 
-              // ── PREFERENCES ──
-              _sectionHeader(AppStrings.preferences),
+              // ── ACCOUNT ──
+              _sectionHeader('ACCOUNT'),
               _settingsGroup([
                 _SettingItem(
-                    icon: Icons.payment_outlined,
+                    icon: Icons.person_outline,
                     iconColor: AppColors.info,
-                    title: AppStrings.paymentMethods,
+                    title: 'Edit Profile',
                     onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                        builder: (_) => const PaymentMethodsScreen()))),
-                _SettingItem(
-                    icon: Icons.favorite_outline,
-                    iconColor: Colors.pink,
-                    title: AppStrings.favoriteSpots,
-                    onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                        builder: (_) => const SavedScreen()))),
-              ]),
-              const SizedBox(height: 14),
-
-              // ── SYSTEM ──
-              _sectionHeader(AppStrings.system),
-              _settingsGroup([
+                        builder: (_) => const EditProfileScreen()))),
                 _SettingItem(
                     icon: Icons.help_outline,
                     iconColor: AppColors.accent,
                     title: AppStrings.helpSupport,
                     onTap: () => ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                            content: const Text('Help & Support coming soon'),
+                            content:
+                                const Text('Help & Support coming soon'),
                             behavior: SnackBarBehavior.floating,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10))))),
@@ -246,6 +259,38 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildMiniStat(String value, String label, Color color) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.06),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: color.withValues(alpha: 0.15)),
+        ),
+        child: Column(
+          children: [
+            Text(
+              value,
+              style: GoogleFonts.poppins(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: color,
+              ),
+            ),
+            Text(
+              label,
+              style: GoogleFonts.poppins(
+                fontSize: 11,
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   ImageProvider? _getAvatarImage(UserModel user) {
     if (user.avatarUrl.isEmpty) return null;
     if (user.avatarUrl.startsWith('/') || user.avatarUrl.startsWith('C:')) {
@@ -254,28 +299,6 @@ class ProfileScreen extends StatelessWidget {
       return null;
     }
     return NetworkImage(user.avatarUrl);
-  }
-
-  Color _roleBadgeColor(UserRole role) {
-    switch (role) {
-      case UserRole.admin:
-        return AppColors.error;
-      case UserRole.owner:
-        return AppColors.success;
-      case UserRole.user:
-        return AppColors.primary;
-    }
-  }
-
-  IconData _roleIcon(UserRole role) {
-    switch (role) {
-      case UserRole.admin:
-        return Icons.admin_panel_settings;
-      case UserRole.owner:
-        return Icons.home_work;
-      case UserRole.user:
-        return Icons.directions_car;
-    }
   }
 
   Widget _sectionHeader(String title) {
@@ -330,7 +353,8 @@ class ProfileScreen extends StatelessWidget {
                             item.iconColor.withValues(alpha: 0.05)
                           ]),
                           borderRadius: BorderRadius.circular(12)),
-                      child: Icon(item.icon, color: item.iconColor, size: 20)),
+                      child:
+                          Icon(item.icon, color: item.iconColor, size: 20)),
                   const SizedBox(width: 14),
                   Expanded(
                       child: Text(item.title,
@@ -338,10 +362,6 @@ class ProfileScreen extends StatelessWidget {
                               fontSize: 15,
                               fontWeight: FontWeight.w500,
                               color: AppColors.textPrimary))),
-                  if (item.trailing != null) ...[
-                    item.trailing!,
-                    const SizedBox(width: 8)
-                  ],
                   Icon(Icons.arrow_forward_ios_rounded,
                       color: AppColors.textHint.withValues(alpha: 0.4),
                       size: 16),
@@ -362,14 +382,12 @@ class _SettingItem {
   final IconData icon;
   final Color iconColor;
   final String title;
-  final Widget? trailing; // ignore: unused_element_parameter
   final VoidCallback onTap;
 
   const _SettingItem({
     required this.icon,
     required this.iconColor,
     required this.title,
-    this.trailing, // ignore: unused_element_parameter
     required this.onTap,
   });
 }

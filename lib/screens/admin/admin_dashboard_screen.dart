@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -479,14 +480,21 @@ class _UserListScreen extends StatelessWidget {
                               child: CircleAvatar(
                                   radius: 22,
                                   backgroundColor: Colors.white,
-                                  child: Text(
-                                      user.name.isNotEmpty
-                                          ? user.name[0].toUpperCase()
-                                          : '?',
-                                      style: GoogleFonts.poppins(
-                                          fontWeight: FontWeight.w700,
-                                          color: rc,
-                                          fontSize: 16))),
+                                  backgroundImage: _getAvatarImage(user),
+                                  onBackgroundImageError:
+                                      _getAvatarImage(user) != null
+                                          ? (_, __) {}
+                                          : null,
+                                  child: _getAvatarImage(user) == null
+                                      ? Text(
+                                          user.name.isNotEmpty
+                                              ? user.name[0].toUpperCase()
+                                              : '?',
+                                          style: GoogleFonts.poppins(
+                                              fontWeight: FontWeight.w700,
+                                              color: rc,
+                                              fontSize: 16))
+                                      : null),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
@@ -531,6 +539,16 @@ class _UserListScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  ImageProvider? _getAvatarImage(UserModel user) {
+    if (user.avatarUrl.isEmpty) return null;
+    if (user.avatarUrl.startsWith('/') || user.avatarUrl.startsWith('C:')) {
+      final file = File(user.avatarUrl);
+      if (file.existsSync()) return FileImage(file);
+      return null;
+    }
+    return NetworkImage(user.avatarUrl);
   }
 }
 
