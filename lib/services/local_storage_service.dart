@@ -2,6 +2,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
 import '../models/parking_spot.dart';
 import '../models/booking.dart';
+import '../models/chat_message.dart';
 
 /// Local storage service for prototype authentication
 /// Stores user accounts and session data on device using SharedPreferences
@@ -14,6 +15,8 @@ class LocalStorageService {
   static const String _bookingsKey = 'bookings';
   static const String _favoritesKey = 'favorite_ids';
   static const String _dataSeededKey = 'data_seeded_v3';
+  static const String _messagesKey = 'chat_messages';
+  static const String _conversationsKey = 'conversations';
 
   // ---------- USER REGISTRATION ----------
 
@@ -47,16 +50,16 @@ class LocalStorageService {
   static Future<void> updateUser(UserModel updatedUser) async {
     final prefs = await SharedPreferences.getInstance();
     final users = await getAllUsers();
-    
+
     // Find and update the user
     final index = users.indexWhere((u) => u.id == updatedUser.id);
     if (index != -1) {
       users[index] = updatedUser;
-      
+
       // Save updated users list
       final usersJson = users.map((u) => u.toJsonString()).toList();
       await prefs.setStringList(_usersKey, usersJson);
-      
+
       // Update current user if it's the same user
       final currentUserId = prefs.getString(_currentUserKey);
       if (currentUserId == updatedUser.id) {
@@ -68,40 +71,42 @@ class LocalStorageService {
   /// Reset user password by email
   static Future<String?> resetPassword(String email, String newPassword) async {
     final users = await getAllUsers();
-    
+
     // Find user by email
-    final userIndex = users.indexWhere((u) => u.email.toLowerCase() == email.toLowerCase());
+    final userIndex =
+        users.indexWhere((u) => u.email.toLowerCase() == email.toLowerCase());
     if (userIndex == -1) {
       return 'User not found';
     }
-    
+
     // Update password
     final user = users[userIndex];
     final updatedUser = user.copyWith(password: newPassword);
     users[userIndex] = updatedUser;
-    
+
     // Save updated users list
     final prefs = await SharedPreferences.getInstance();
     final usersJson = users.map((u) => u.toJsonString()).toList();
     await prefs.setStringList(_usersKey, usersJson);
-    
+
     return null; // Success
   }
 
   /// Get all pending owner registrations for admin approval
   static Future<List<UserModel>> getPendingOwnerApprovals() async {
     final users = await getAllUsers();
-    return users.where((user) => 
-      user.role == UserRole.owner && 
-      user.approvalStatus == ApprovalStatus.pending
-    ).toList();
+    return users
+        .where((user) =>
+            user.role == UserRole.owner &&
+            user.approvalStatus == ApprovalStatus.pending)
+        .toList();
   }
 
   /// Approve an owner registration (admin action)
   static Future<String?> approveOwner(String userId) async {
     final users = await getAllUsers();
     final userIndex = users.indexWhere((u) => u.id == userId);
-    
+
     if (userIndex == -1) {
       return 'User not found';
     }
@@ -130,7 +135,7 @@ class LocalStorageService {
   static Future<String?> rejectOwner(String userId) async {
     final users = await getAllUsers();
     final userIndex = users.indexWhere((u) => u.id == userId);
-    
+
     if (userIndex == -1) {
       return 'User not found';
     }
@@ -335,5 +340,85 @@ class LocalStorageService {
     }
 
     await prefs.setBool(_dataSeededKey, true);
+  }
+
+  // ---------- MESSAGING ----------
+
+  /// Get all messages for a conversation between two users
+  static Future<List<ChatMessage>> getMessages(
+      String visitorId, String ownerId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonList = prefs.getStringList(_messagesKey) ?? [];
+    final allMessages =
+        jsonList.map((s) => ChatMessage.fromJsonString(s)).toList();
+    return allMessages
+        .where((m) =>
+            (m.senderId == visitorId && m.receiverId == ownerId) ||
+            (m.senderId == ownerId && m.receiverId == visitorId))
+        .toList()
+      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+  }
+
+  /// Save a new chat message
+  static Future<void> saveMessage(ChatMessage message) async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonList = prefs.getStringList(_messagesKey) ?? [];
+    jsonList.add(message.toJsonString());
+    await prefs.setStringList(_messagesKey, jsonList);
+  }
+
+  /// Get all conversations for a user
+  static Future<List<Conversation>> getConversations(String userId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonList = prefs.getStringList(_conversationsKey) ?? [];
+    final allConvos =
+        jsonList.map((s) => Conversation.fromJsonString(s)).toList();
+    return allConvos
+        .where((c) => c.user1Id == userId || c.user2Id == userId)
+        .toList()
+      ..sort((a, b) => b.lastMessageTime.compareTo(a.lastMessageTime));
+  }
+
+  /// Get all conversations (all users)
+  static Future<List<Conversation>> getAllConversations() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonList = prefs.getStringList(_conversationsKey) ?? [];
+    return jsonList.map((s) => Conversation.fromJsonString(s)).toList();
+  }
+
+  /// Create or update a conversation
+  static Future<void> saveConversation(Conversation conversation) async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonList = prefs.getStringList(_conversationsKey) ?? [];
+    final allConvos =
+        jsonList.map((s) => Conversation.fromJsonString(s)).toList();
+    final idx = allConvos.indexWhere((c) => c.id == conversation.id);
+    if (idx >= 0) {
+      allConvos[idx] = conversation;
+    } else {
+      allConvos.add(conversation);
+    }
+    await prefs.setStringList(
+        _conversationsKey, allConvos.map((c) => c.toJsonString()).toList());
+  }
+
+  /// Mark all messages in a conversation as read for a user
+  static Future<void> markMessagesAsRead(
+      String visitorId, String ownerId, String readerId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonList = prefs.getStringList(_messagesKey) ?? [];
+    final allMessages =
+        jsonList.map((s) => ChatMessage.fromJsonString(s)).toList();
+    for (int i = 0; i < allMessages.length; i++) {
+      final m = allMessages[i];
+      if (m.receiverId == readerId &&
+          ((m.senderId == visitorId && m.receiverId == ownerId) ||
+              (m.senderId == ownerId && m.receiverId == visitorId)) &&
+          !m.isRead) {
+        allMessages[i] = m.copyWith(isRead: true);
+      }
+    }
+    await prefs.setStringList(
+        _messagesKey, allMessages.map((m) => m.toJsonString()).toList());
   }
 }

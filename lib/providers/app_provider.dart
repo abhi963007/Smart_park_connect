@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/parking_spot.dart';
 import '../models/booking.dart';
 import '../models/user_model.dart';
+import '../models/chat_message.dart';
 import '../services/local_storage_service.dart';
 
 /// Main application state provider
@@ -42,6 +43,10 @@ class AppProvider extends ChangeNotifier {
     _allBookings = await LocalStorageService.getAllBookings();
     _favoriteIds = await LocalStorageService.getFavorites();
     _allUsers = await LocalStorageService.getAllUsers();
+    if (_isLoggedIn) {
+      _conversations =
+          await LocalStorageService.getConversations(currentUser.id);
+    }
     notifyListeners();
   }
 
@@ -457,5 +462,89 @@ class AppProvider extends ChangeNotifier {
     } catch (e) {
       return null;
     }
+  }
+
+  // ---------- MESSAGING ----------
+  List<Conversation> _conversations = [];
+  List<Conversation> get conversations => _conversations;
+
+  /// Load conversations for the current user
+  Future<void> loadConversations() async {
+    _conversations = await LocalStorageService.getConversations(currentUser.id);
+    notifyListeners();
+  }
+
+  /// Get messages between current user and another user
+  Future<List<ChatMessage>> getMessages(String otherUserId) async {
+    return await LocalStorageService.getMessages(currentUser.id, otherUserId);
+  }
+
+  /// Send a message to another user
+  Future<void> sendMessage({
+    required String receiverId,
+    required String receiverName,
+    required String message,
+  }) async {
+    final msg = ChatMessage(
+      id: 'msg_${DateTime.now().millisecondsSinceEpoch}',
+      senderId: currentUser.id,
+      senderName: currentUser.name,
+      receiverId: receiverId,
+      receiverName: receiverName,
+      message: message,
+      timestamp: DateTime.now(),
+    );
+    await LocalStorageService.saveMessage(msg);
+
+    // Create or update conversation
+    final convoId = _generateConvoId(currentUser.id, receiverId);
+    final existingConvos = await LocalStorageService.getAllConversations();
+    final existingIdx = existingConvos.indexWhere((c) => c.id == convoId);
+
+    final convo = Conversation(
+      id: convoId,
+      user1Id: currentUser.id,
+      user1Name: currentUser.name,
+      user2Id: receiverId,
+      user2Name: receiverName,
+      lastMessage: message,
+      lastMessageTime: DateTime.now(),
+      unreadCount:
+          existingIdx >= 0 ? existingConvos[existingIdx].unreadCount + 1 : 1,
+    );
+    await LocalStorageService.saveConversation(convo);
+    await loadConversations();
+  }
+
+  /// Mark messages as read
+  Future<void> markAsRead(String otherUserId) async {
+    await LocalStorageService.markMessagesAsRead(
+        currentUser.id, otherUserId, currentUser.id);
+    // Reset unread count in conversation
+    final convoId = _generateConvoId(currentUser.id, otherUserId);
+    final allConvos = await LocalStorageService.getAllConversations();
+    final idx = allConvos.indexWhere((c) => c.id == convoId);
+    if (idx >= 0) {
+      final updated = allConvos[idx].copyWith(unreadCount: 0);
+      await LocalStorageService.saveConversation(updated);
+    }
+    await loadConversations();
+  }
+
+  /// Get or create a conversation ID between two users
+  String _generateConvoId(String userId1, String userId2) {
+    final sorted = [userId1, userId2]..sort();
+    return 'convo_${sorted[0]}_${sorted[1]}';
+  }
+
+  /// Get total unread message count for current user
+  int get totalUnreadMessages {
+    int count = 0;
+    for (final c in _conversations) {
+      if (c.user2Id == currentUser.id) {
+        count += c.unreadCount;
+      }
+    }
+    return count;
   }
 }

@@ -11,6 +11,7 @@ import '../../providers/app_provider.dart';
 import '../../widgets/map_pin.dart';
 import '../../widgets/smart_image.dart';
 import '../booking/select_booking_time_screen.dart';
+import '../chat/chat_screen.dart';
 
 /// Parking spot details screen with image gallery, amenities, host info, map
 /// Matches reference: parking_spot_details/screen.png
@@ -249,26 +250,38 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                                 ],
                               ),
                             ),
-                            OutlinedButton(
-                              onPressed: () {},
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: AppColors.primary,
-                                side: const BorderSide(
-                                    color: AppColors.primary, width: 1.5),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
+                            if (context.read<AppProvider>().currentUser.id !=
+                                spot.ownerId)
+                              OutlinedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => ChatScreen(
+                                        otherUserId: spot.ownerId,
+                                        otherUserName: spot.ownerName,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: AppColors.primary,
+                                  side: const BorderSide(
+                                      color: AppColors.primary, width: 1.5),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 8),
                                 ),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 8),
-                              ),
-                              child: Text(
-                                AppStrings.message,
-                                style: GoogleFonts.poppins(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
+                                child: Text(
+                                  AppStrings.message,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
-                            ),
                           ],
                         ),
                       ),
