@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/parking_spot.dart';
 import '../models/booking.dart';
 import '../models/user_model.dart';
@@ -370,5 +371,91 @@ class AppProvider extends ChangeNotifier {
             s.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
             s.address.toLowerCase().contains(_searchQuery.toLowerCase()))
         .toList();
+  }
+
+  // ---------- USER MANAGEMENT (ADMIN) ----------
+  /// Update user information (admin only)
+  Future<String?> adminUpdateUser(
+    String userId, {
+    String? name,
+    String? email,
+    String? phone,
+    UserRole? role,
+    ApprovalStatus? approvalStatus,
+  }) async {
+    try {
+      final userIndex = _allUsers.indexWhere((u) => u.id == userId);
+      if (userIndex == -1) return 'User not found';
+
+      final currentUser = _allUsers[userIndex];
+      final updatedUser = currentUser.copyWith(
+        name: name,
+        email: email,
+        phone: phone,
+        role: role,
+        approvalStatus: approvalStatus,
+      );
+
+      // Use existing updateUser method from LocalStorageService
+      await LocalStorageService.updateUser(updatedUser);
+
+      // Reload all users to get updated data
+      _allUsers = await LocalStorageService.getAllUsers();
+
+      // Update logged in user if it's the same user
+      if (_loggedInUser?.id == userId) {
+        _loggedInUser = updatedUser;
+      }
+
+      notifyListeners();
+      return null; // Success
+    } catch (e) {
+      return 'Failed to update user: $e';
+    }
+  }
+
+  /// Delete user (admin only)
+  Future<String?> deleteUser(String userId) async {
+    try {
+      // Prevent deleting the current logged in user
+      if (_loggedInUser?.id == userId) {
+        return 'Cannot delete currently logged in user';
+      }
+
+      final userIndex = _allUsers.indexWhere((u) => u.id == userId);
+      if (userIndex == -1) return 'User not found';
+
+      final userToDelete = _allUsers[userIndex];
+
+      // If deleting an owner, also remove their parking spots
+      if (userToDelete.role == UserRole.owner) {
+        _parkingSpots.removeWhere((spot) => spot.ownerId == userId);
+        await LocalStorageService.saveParkingSpots(_parkingSpots);
+      }
+
+      // Remove user from bookings as well
+      _allBookings.removeWhere((booking) => booking.userId == userId);
+      await LocalStorageService.saveBookings(_allBookings);
+
+      // Remove the user - we'll need to manually update the users list
+      _allUsers.removeAt(userIndex);
+      final prefs = await SharedPreferences.getInstance();
+      final usersJson = _allUsers.map((u) => u.toJsonString()).toList();
+      await prefs.setStringList('users', usersJson);
+
+      notifyListeners();
+      return null; // Success
+    } catch (e) {
+      return 'Failed to delete user: $e';
+    }
+  }
+
+  /// Get user by ID
+  UserModel? getUserById(String userId) {
+    try {
+      return _allUsers.firstWhere((u) => u.id == userId);
+    } catch (e) {
+      return null;
+    }
   }
 }
