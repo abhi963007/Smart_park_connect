@@ -146,7 +146,7 @@ class _SplashScreenState extends State<SplashScreen>
                         style: GoogleFonts.poppins(
                           fontSize: 15,
                           fontWeight: FontWeight.w400,
-                          color: Colors.white.withOpacity(0.85),
+                          color: Colors.white.withValues(alpha: 0.85),
                         ),
                       ),
                     ],
@@ -185,7 +185,7 @@ class _RoadLinesPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withOpacity(0.08)
+      ..color = Colors.white.withValues(alpha: 0.08)
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
 

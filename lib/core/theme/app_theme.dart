@@ -143,7 +143,7 @@ class AppTheme {
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: Colors.white.withOpacity(0.1), width: 1),
+          side: BorderSide(color: Colors.white.withValues(alpha: 0.1), width: 1),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -168,11 +168,11 @@ class AppTheme {
             const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
+          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
+          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
@@ -245,7 +245,7 @@ class AppTheme {
       bodySmall: GoogleFonts.poppins(
         fontSize: 12,
         fontWeight: FontWeight.w400,
-        color: baseColor.withOpacity(0.7),
+        color: baseColor.withValues(alpha: 0.7),
       ),
       labelLarge: GoogleFonts.poppins(
         fontSize: 14,
@@ -261,7 +261,7 @@ class AppTheme {
         fontSize: 10,
         fontWeight: FontWeight.w500,
         letterSpacing: 1.2,
-        color: baseColor.withOpacity(0.6),
+        color: baseColor.withValues(alpha: 0.6),
       ),
     );
   }

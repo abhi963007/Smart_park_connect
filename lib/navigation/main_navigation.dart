@@ -45,7 +45,7 @@ class _MainNavigationState extends State<MainNavigation> {
         ];
       case UserRole.owner:
         // Check if owner is approved before allowing dashboard access
-        final dashboardScreen = user.canPerformOwnerActions 
+        final dashboardScreen = user.canPerformOwnerActions
             ? const OwnerDashboardScreen()
             : const OwnerPendingScreen();
         return [
@@ -55,7 +55,6 @@ class _MainNavigationState extends State<MainNavigation> {
           const ProfileScreen(),
         ];
       case UserRole.user:
-      default:
         return const [
           HomeScreen(),
           SavedScreen(),
@@ -72,22 +71,24 @@ class _MainNavigationState extends State<MainNavigation> {
         return [
           _NavItemData(Icons.dashboard_outlined, Icons.dashboard, 'Dashboard'),
           _NavItemData(Icons.explore_outlined, Icons.explore, 'Explore'),
-          _NavItemData(Icons.calendar_today_outlined, Icons.calendar_today, 'Bookings'),
+          _NavItemData(
+              Icons.calendar_today_outlined, Icons.calendar_today, 'Bookings'),
           _NavItemData(Icons.person_outline, Icons.person, 'Profile'),
         ];
       case UserRole.owner:
         return [
           _NavItemData(Icons.explore_outlined, Icons.explore, 'Explore'),
           _NavItemData(Icons.dashboard_outlined, Icons.dashboard, 'Dashboard'),
-          _NavItemData(Icons.calendar_today_outlined, Icons.calendar_today, 'Bookings'),
+          _NavItemData(
+              Icons.calendar_today_outlined, Icons.calendar_today, 'Bookings'),
           _NavItemData(Icons.person_outline, Icons.person, 'Profile'),
         ];
       case UserRole.user:
-      default:
         return [
           _NavItemData(Icons.explore_outlined, Icons.explore, 'Explore'),
           _NavItemData(Icons.favorite_border, Icons.favorite, 'Saved'),
-          _NavItemData(Icons.calendar_today_outlined, Icons.calendar_today, 'Bookings'),
+          _NavItemData(
+              Icons.calendar_today_outlined, Icons.calendar_today, 'Bookings'),
           _NavItemData(Icons.person_outline, Icons.person, 'Profile'),
         ];
     }
@@ -116,7 +117,7 @@ class _MainNavigationState extends State<MainNavigation> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.06),
+              color: Colors.black.withValues(alpha: 0.06),
               blurRadius: 16,
               offset: const Offset(0, -4),
             ),

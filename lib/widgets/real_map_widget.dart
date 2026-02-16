@@ -42,10 +42,11 @@ class _RealMapWidgetState extends State<RealMapWidget> {
   Future<void> _initializeMap() async {
     try {
       // Request location permission
-      _locationPermissionGranted = await LocationService.instance.requestLocationPermission();
-      
+      _locationPermissionGranted =
+          await LocationService.instance.requestLocationPermission();
+
       LatLng centerLocation;
-      
+
       if (_locationPermissionGranted) {
         // Try to get current location
         final location = await LocationService.instance.getCurrentLocation();
@@ -95,14 +96,15 @@ class _RealMapWidgetState extends State<RealMapWidget> {
       );
     }
 
-    return Container(
+    return SizedBox(
       height: widget.height,
       child: Stack(
         children: [
           FlutterMap(
             mapController: _mapController,
             options: MapOptions(
-              initialCenter: _currentLocation ?? LocationService.instance.getDefaultLocation(),
+              initialCenter: _currentLocation ??
+                  LocationService.instance.getDefaultLocation(),
               initialZoom: 14.0,
               minZoom: 10.0,
               maxZoom: 18.0,
@@ -117,7 +119,7 @@ class _RealMapWidgetState extends State<RealMapWidget> {
                 userAgentPackageName: 'com.example.smart_park_connect',
                 maxZoom: 19,
               ),
-              
+
               // Current location marker
               if (_currentLocation != null)
                 MarkerLayer(
@@ -133,7 +135,7 @@ class _RealMapWidgetState extends State<RealMapWidget> {
                           border: Border.all(color: Colors.white, width: 3),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.blue.withOpacity(0.3),
+                              color: Colors.blue.withValues(alpha: 0.3),
                               blurRadius: 10,
                               spreadRadius: 2,
                             ),
@@ -148,16 +150,16 @@ class _RealMapWidgetState extends State<RealMapWidget> {
                     ),
                   ],
                 ),
-              
+
               // Parking spot markers
               MarkerLayer(
                 markers: _parkingLocations.asMap().entries.map((entry) {
                   final index = entry.key;
                   final location = entry.value;
-                  final spot = index < widget.parkingSpots.length 
-                      ? widget.parkingSpots[index] 
+                  final spot = index < widget.parkingSpots.length
+                      ? widget.parkingSpots[index]
                       : widget.parkingSpots.first;
-                  
+
                   return Marker(
                     point: location,
                     width: 60,
@@ -168,13 +170,14 @@ class _RealMapWidgetState extends State<RealMapWidget> {
                         children: [
                           // Price bubble
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
+                                  color: Colors.black.withValues(alpha: 0.2),
                                   blurRadius: 4,
                                   offset: const Offset(0, 2),
                                 ),
@@ -195,16 +198,17 @@ class _RealMapWidgetState extends State<RealMapWidget> {
                             width: 36,
                             height: 36,
                             decoration: BoxDecoration(
-                              color: spot.isAvailable 
-                                  ? AppColors.primary 
+                              color: spot.isAvailable
+                                  ? AppColors.primary
                                   : AppColors.error,
                               shape: BoxShape.circle,
                               border: Border.all(color: Colors.white, width: 2),
                               boxShadow: [
                                 BoxShadow(
-                                  color: (spot.isAvailable 
-                                      ? AppColors.primary 
-                                      : AppColors.error).withOpacity(0.3),
+                                  color: (spot.isAvailable
+                                          ? AppColors.primary
+                                          : AppColors.error)
+                                      .withValues(alpha: 0.3),
                                   blurRadius: 8,
                                   spreadRadius: 2,
                                 ),
@@ -224,7 +228,7 @@ class _RealMapWidgetState extends State<RealMapWidget> {
               ),
             ],
           ),
-          
+
           // Map controls (hide as sheet expands)
           if (widget.uiHideProgressListenable == null)
             _buildControls(0)
@@ -233,7 +237,7 @@ class _RealMapWidgetState extends State<RealMapWidget> {
               valueListenable: widget.uiHideProgressListenable!,
               builder: (context, progress, _) => _buildControls(progress),
             ),
-          
+
           // Location permission banner
           if (!_locationPermissionGranted)
             Positioned(
@@ -243,7 +247,7 @@ class _RealMapWidgetState extends State<RealMapWidget> {
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.warning.withOpacity(0.9),
+                  color: AppColors.warning.withValues(alpha: 0.9),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -287,7 +291,7 @@ class _RealMapWidgetState extends State<RealMapWidget> {
   void _goToCurrentLocation() async {
     // Check location status first
     final status = await LocationService.instance.checkLocationStatus();
-    
+
     switch (status) {
       case LocationStatus.serviceDisabled:
         _showLocationDialog(
@@ -296,18 +300,21 @@ class _RealMapWidgetState extends State<RealMapWidget> {
           'Open Settings',
           () async {
             await LocationService.instance.openLocationSettings();
+            if (!mounted) return;
             Navigator.of(context).pop();
           },
         );
         return;
-        
+
       case LocationStatus.permissionDenied:
         _showLocationDialog(
           'Location Permission Required',
           'This app needs location permission to show your current position on the map.',
           'Grant Permission',
           () async {
-            final granted = await LocationService.instance.requestLocationPermission();
+            final granted =
+                await LocationService.instance.requestLocationPermission();
+            if (!mounted) return;
             Navigator.of(context).pop();
             if (granted) {
               _goToCurrentLocation(); // Retry after permission granted
@@ -315,7 +322,7 @@ class _RealMapWidgetState extends State<RealMapWidget> {
           },
         );
         return;
-        
+
       case LocationStatus.permissionDeniedForever:
         _showLocationDialog(
           'Location Permission Denied',
@@ -323,11 +330,12 @@ class _RealMapWidgetState extends State<RealMapWidget> {
           'Open App Settings',
           () async {
             await LocationService.instance.openAppSettings();
+            if (!mounted) return;
             Navigator.of(context).pop();
           },
         );
         return;
-        
+
       case LocationStatus.granted:
         // Permission granted, proceed with getting location
         break;
@@ -357,21 +365,25 @@ class _RealMapWidgetState extends State<RealMapWidget> {
     }
   }
 
-  void _showLocationDialog(String title, String message, String buttonText, VoidCallback onPressed) {
+  void _showLocationDialog(
+      String title, String message, String buttonText, VoidCallback onPressed) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(title, style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+        title: Text(title,
+            style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
         content: Text(message, style: GoogleFonts.poppins()),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('Cancel', style: GoogleFonts.poppins(color: AppColors.textSecondary)),
+            child: Text('Cancel',
+                style: GoogleFonts.poppins(color: AppColors.textSecondary)),
           ),
           ElevatedButton(
             onPressed: onPressed,
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
-            child: Text(buttonText, style: GoogleFonts.poppins(color: Colors.white)),
+            child: Text(buttonText,
+                style: GoogleFonts.poppins(color: Colors.white)),
           ),
         ],
       ),

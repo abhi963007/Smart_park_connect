@@ -364,7 +364,7 @@ class _SearchScreenState extends State<SearchScreen> {
               width: 38,
               height: 38,
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.08),
+                color: AppColors.primary.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: AppColors.primary, size: 18),
@@ -497,7 +497,7 @@ class _SearchScreenState extends State<SearchScreen> {
               child: Center(
                 child: Column(
                   children: [
-                    Icon(Icons.search, size: 48, color: AppColors.textHint.withOpacity(0.4)),
+                    Icon(Icons.search, size: 48, color: AppColors.textHint.withValues(alpha: 0.4)),
                     const SizedBox(height: 12),
                     Text(
                       'Search for any place, address\nor landmark',
@@ -531,7 +531,7 @@ class _SearchScreenState extends State<SearchScreen> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.my_location,

@@ -29,7 +29,7 @@ class ParkingCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 14, offset: const Offset(0, 4))],
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 14, offset: const Offset(0, 4))],
         ),
         child: Padding(
           padding: const EdgeInsets.all(12),
@@ -41,9 +41,9 @@ class ParkingCard extends StatelessWidget {
                 child: Image.network(spot.imageUrl, width: 100, height: 100, fit: BoxFit.cover,
                   errorBuilder: (_, __, ___) => Container(width: 100, height: 100,
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(colors: [AppColors.primary.withOpacity(0.08), AppColors.primary.withOpacity(0.03)]),
+                      gradient: LinearGradient(colors: [AppColors.primary.withValues(alpha: 0.08), AppColors.primary.withValues(alpha: 0.03)]),
                       borderRadius: BorderRadius.circular(14)),
-                    child: Icon(Icons.local_parking, color: AppColors.primary.withOpacity(0.3)))),
+                    child: Icon(Icons.local_parking, color: AppColors.primary.withValues(alpha: 0.3)))),
               ),
               const SizedBox(width: 12),
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -91,7 +91,7 @@ class ParkingCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(colors: [AppColors.primary, Color(0xFF7C3AED)]),
                     borderRadius: BorderRadius.circular(12),
-                    boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 3))]),
+                    boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 3))]),
                   child: ElevatedButton(
                     onPressed: onBookTap,
                     style: ElevatedButton.styleFrom(
@@ -155,7 +155,7 @@ class ParkingCardCompact extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(18),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 14, offset: const Offset(0, 4)),
+            BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 14, offset: const Offset(0, 4)),
           ],
         ),
         child: Column(
@@ -168,29 +168,29 @@ class ParkingCardCompact extends StatelessWidget {
                 child: Image.network(spot.imageUrl, width: 220, height: 120, fit: BoxFit.cover,
                   errorBuilder: (_, __, ___) => Container(width: 220, height: 120,
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(colors: [AppColors.primary.withOpacity(0.08), AppColors.primary.withOpacity(0.03)]),
+                      gradient: LinearGradient(colors: [AppColors.primary.withValues(alpha: 0.08), AppColors.primary.withValues(alpha: 0.03)]),
                       borderRadius: const BorderRadius.vertical(top: Radius.circular(18))),
-                    child: Icon(Icons.local_parking, color: AppColors.primary.withOpacity(0.3), size: 40))),
+                    child: Icon(Icons.local_parking, color: AppColors.primary.withValues(alpha: 0.3), size: 40))),
               ),
               // Gradient overlay
               Positioned.fill(child: Container(decoration: BoxDecoration(
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
                 gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Colors.black.withOpacity(0.2)])))),
+                  colors: [Colors.transparent, Colors.black.withValues(alpha: 0.2)])))),
               // Price badge
               Positioned(bottom: 8, left: 8, child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(colors: [AppColors.primary, Color(0xFF7C3AED)]),
                   borderRadius: BorderRadius.circular(8),
-                  boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 6, offset: const Offset(0, 2))]),
+                  boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.3), blurRadius: 6, offset: const Offset(0, 2))]),
                 child: Text('\u20B9${spot.pricePerHour.toInt()}/hr',
                   style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white)))),
               // Rating badge
               Positioned(top: 8, right: 8, child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8),
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 6)]),
+                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 6)]),
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
                   const Icon(Icons.star_rounded, color: AppColors.starYellow, size: 14),
                   const SizedBox(width: 2),

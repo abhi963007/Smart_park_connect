@@ -163,7 +163,7 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 6),
                             decoration: BoxDecoration(
-                              color: AppColors.primary.withOpacity(0.1),
+                              color: AppColors.primary.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Row(
@@ -394,7 +394,7 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                                           border: Border.all(color: Colors.white, width: 3),
                                           boxShadow: [
                                             BoxShadow(
-                                              color: Colors.red.withOpacity(0.4),
+                                              color: Colors.red.withValues(alpha: 0.4),
                                               blurRadius: 8,
                                               offset: const Offset(0, 3),
                                             ),
@@ -450,7 +450,7 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                     color: Colors.white,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
+                        color: Colors.black.withValues(alpha: 0.08),
                         blurRadius: 16,
                         offset: const Offset(0, -4),
                       ),
@@ -594,7 +594,7 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.3),
+          color: Colors.black.withValues(alpha: 0.3),
           shape: BoxShape.circle,
         ),
         child: Icon(icon, color: color ?? Colors.white, size: 20),

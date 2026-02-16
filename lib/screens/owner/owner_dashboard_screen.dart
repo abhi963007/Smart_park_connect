@@ -193,7 +193,7 @@ class OwnerDashboardScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.cardBorder.withOpacity(0.5)),
+        border: Border.all(color: AppColors.cardBorder.withValues(alpha: 0.5)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -202,7 +202,7 @@ class OwnerDashboardScreen extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, color: color, size: 22),
@@ -237,7 +237,7 @@ class OwnerDashboardScreen extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.cardBorder.withOpacity(0.5)),
+          border: Border.all(color: AppColors.cardBorder.withValues(alpha: 0.5)),
         ),
         child: Row(
           children: [
@@ -245,7 +245,7 @@ class OwnerDashboardScreen extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: color, size: 24),
@@ -300,13 +300,13 @@ class OwnerDashboardScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.cardBorder.withOpacity(0.5)),
+        border: Border.all(color: AppColors.cardBorder.withValues(alpha: 0.5)),
       ),
       child: Row(
         children: [
           CircleAvatar(
             radius: 20,
-            backgroundColor: AppColors.primary.withOpacity(0.1),
+            backgroundColor: AppColors.primary.withValues(alpha: 0.1),
             child: Text(
               userName[0],
               style: GoogleFonts.poppins(
@@ -353,7 +353,7 @@ class OwnerDashboardScreen extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.1),
+                  color: statusColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
@@ -686,21 +686,21 @@ class _AddParkingScreenState extends State<_AddParkingScreen> {
                     border: Border.all(
                       color: _searchFocusNode.hasFocus 
                           ? AppColors.primary 
-                          : AppColors.cardBorder.withOpacity(0.3),
+                          : AppColors.cardBorder.withValues(alpha: 0.3),
                       width: _searchFocusNode.hasFocus ? 2 : 1,
                     ),
                     boxShadow: [
                       BoxShadow(
                         color: _searchFocusNode.hasFocus 
-                            ? AppColors.primary.withOpacity(0.12)
-                            : Colors.black.withOpacity(0.03),
+                            ? AppColors.primary.withValues(alpha: 0.12)
+                            : Colors.black.withValues(alpha: 0.03),
                         blurRadius: _searchFocusNode.hasFocus ? 16 : 8,
                         spreadRadius: _searchFocusNode.hasFocus ? 1 : 0,
                         offset: Offset(0, _searchFocusNode.hasFocus ? 6 : 3),
                       ),
                       if (_searchFocusNode.hasFocus)
                         BoxShadow(
-                          color: AppColors.primary.withOpacity(0.06),
+                          color: AppColors.primary.withValues(alpha: 0.06),
                           blurRadius: 32,
                           spreadRadius: -4,
                           offset: const Offset(0, 8),
@@ -720,7 +720,7 @@ class _AddParkingScreenState extends State<_AddParkingScreen> {
                     decoration: InputDecoration(
                       hintText: 'Search for a place or area...',
                       hintStyle: GoogleFonts.poppins(
-                        color: AppColors.textHint.withOpacity(0.7),
+                        color: AppColors.textHint.withValues(alpha: 0.7),
                         fontSize: 13,
                         fontWeight: FontWeight.w400,
                       ),
@@ -742,7 +742,7 @@ class _AddParkingScreenState extends State<_AddParkingScreen> {
                                   gradient: LinearGradient(
                                     colors: [
                                       AppColors.primary,
-                                      AppColors.primary.withOpacity(0.7),
+                                      AppColors.primary.withValues(alpha: 0.7),
                                     ],
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
@@ -761,7 +761,7 @@ class _AddParkingScreenState extends State<_AddParkingScreen> {
                               icon: Container(
                                 padding: const EdgeInsets.all(4),
                                 decoration: BoxDecoration(
-                                  color: AppColors.textHint.withOpacity(0.1),
+                                  color: AppColors.textHint.withValues(alpha: 0.1),
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(Icons.close_rounded, size: 14, color: AppColors.textSecondary),
@@ -797,7 +797,7 @@ class _AddParkingScreenState extends State<_AddParkingScreen> {
                             border: Border.all(color: AppColors.cardBorder),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.08),
+                                color: Colors.black.withValues(alpha: 0.08),
                                 blurRadius: 16,
                                 offset: const Offset(0, 6),
                               ),
@@ -825,7 +825,7 @@ class _AddParkingScreenState extends State<_AddParkingScreen> {
                     border: Border.all(color: AppColors.cardBorder),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -881,13 +881,13 @@ class _AddParkingScreenState extends State<_AddParkingScreen> {
                                       border: Border.all(color: Colors.white, width: 3),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: const Color(0xFFCC0000).withOpacity(0.4),
+                                          color: const Color(0xFFCC0000).withValues(alpha: 0.4),
                                           blurRadius: 12,
                                           spreadRadius: 2,
                                           offset: const Offset(0, 4),
                                         ),
                                         BoxShadow(
-                                          color: Colors.black.withOpacity(0.2),
+                                          color: Colors.black.withValues(alpha: 0.2),
                                           blurRadius: 8,
                                           offset: const Offset(0, 6),
                                         ),
@@ -926,7 +926,7 @@ class _AddParkingScreenState extends State<_AddParkingScreen> {
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 8,
                           ),
                         ],
@@ -958,7 +958,7 @@ class _AddParkingScreenState extends State<_AddParkingScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.6),
+                        color: Colors.black.withValues(alpha: 0.6),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
@@ -993,7 +993,7 @@ class _AddParkingScreenState extends State<_AddParkingScreen> {
                     child: ChoiceChip(
                       label: Text(label),
                       selected: isSelected,
-                      selectedColor: AppColors.primary.withOpacity(0.12),
+                      selectedColor: AppColors.primary.withValues(alpha: 0.12),
                       backgroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                       shape: RoundedRectangleBorder(
@@ -1036,7 +1036,7 @@ class _AddParkingScreenState extends State<_AddParkingScreen> {
                   ),
                   label: Text(name),
                   selected: isSelected,
-                  selectedColor: AppColors.primary.withOpacity(0.12),
+                  selectedColor: AppColors.primary.withValues(alpha: 0.12),
                   checkmarkColor: AppColors.primary,
                   backgroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
@@ -1209,7 +1209,7 @@ class _AddParkingScreenState extends State<_AddParkingScreen> {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.1),
+                  color: iconColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(icon, size: 18, color: iconColor),
@@ -1268,7 +1268,7 @@ class _AddParkingScreenState extends State<_AddParkingScreen> {
             hintStyle: GoogleFonts.poppins(color: AppColors.textHint, fontSize: 13),
             filled: true,
             fillColor: Colors.white,
-            prefixIcon: icon != null ? Icon(icon, color: AppColors.primary.withOpacity(0.7), size: 20) : null,
+            prefixIcon: icon != null ? Icon(icon, color: AppColors.primary.withValues(alpha: 0.7), size: 20) : null,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppColors.cardBorder)),
             enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppColors.cardBorder)),
             focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: AppColors.primary, width: 2)),
@@ -1309,7 +1309,7 @@ class _ManageBookingsScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.calendar_today, size: 64, color: AppColors.textHint.withOpacity(0.4)),
+                  Icon(Icons.calendar_today, size: 64, color: AppColors.textHint.withValues(alpha: 0.4)),
                   const SizedBox(height: 16),
                   Text('No bookings yet', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
                   const SizedBox(height: 8),
@@ -1336,7 +1336,7 @@ class _ManageBookingsScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.cardBorder.withOpacity(0.5)),
+                    border: Border.all(color: AppColors.cardBorder.withValues(alpha: 0.5)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1345,7 +1345,7 @@ class _ManageBookingsScreen extends StatelessWidget {
                         children: [
                           CircleAvatar(
                             radius: 20,
-                            backgroundColor: AppColors.primary.withOpacity(0.1),
+                            backgroundColor: AppColors.primary.withValues(alpha: 0.1),
                             child: Text(
                               (b.userName.isEmpty ? 'U' : b.userName[0]),
                               style: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: AppColors.primary),
@@ -1363,7 +1363,7 @@ class _ManageBookingsScreen extends StatelessWidget {
                           ),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(color: statusColor.withOpacity(0.1), borderRadius: BorderRadius.circular(6)),
+                            decoration: BoxDecoration(color: statusColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(6)),
                             child: Text(b.status.toUpperCase(), style: GoogleFonts.poppins(fontSize: 10, fontWeight: FontWeight.w600, color: statusColor)),
                           ),
                         ],
@@ -1478,7 +1478,7 @@ class _EarningsScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: AppColors.cardBorder.withOpacity(0.5)),
+                    border: Border.all(color: AppColors.cardBorder.withValues(alpha: 0.5)),
                   ),
                   child: Row(
                     children: [
@@ -1523,7 +1523,7 @@ class _PinPointerPainter extends CustomPainter {
     path.close();
 
     // Draw shadow
-    canvas.drawShadow(path, Colors.black.withOpacity(0.3), 4, true);
+    canvas.drawShadow(path, Colors.black.withValues(alpha: 0.3), 4, true);
     
     // Draw the pointer
     canvas.drawPath(path, paint);

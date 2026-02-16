@@ -213,7 +213,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             height: 260,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.primary.withOpacity(0.06),
+              color: AppColors.primary.withValues(alpha: 0.06),
             ),
             child: Center(
               child: Container(
@@ -224,7 +224,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: data.iconBg.withOpacity(0.3),
+                      color: data.iconBg.withValues(alpha: 0.3),
                       blurRadius: 30,
                       offset: const Offset(0, 10),
                     ),
@@ -237,7 +237,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       child: Icon(
                         data.icon,
                         size: 80,
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                       ),
                     ),
                     // P badges
@@ -270,7 +270,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.4),
+            color: AppColors.primary.withValues(alpha: 0.4),
             blurRadius: 8,
           ),
         ],

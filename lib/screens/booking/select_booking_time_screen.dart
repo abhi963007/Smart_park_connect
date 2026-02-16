@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_strings.dart';
 import '../../models/parking_spot.dart';
-import '../../providers/app_provider.dart';
 import '../payment/payment_screen.dart';
 
 /// Select booking time screen with calendar, time pickers, duration chips
@@ -48,7 +46,6 @@ class _SelectBookingTimeScreenState extends State<SelectBookingTimeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<AppProvider>();
     final spot = widget.spot;
 
     // Calculate duration and price based on selected duration
@@ -153,20 +150,21 @@ class _SelectBookingTimeScreenState extends State<SelectBookingTimeScreen> {
                     // Day headers
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
-                          .map((d) => SizedBox(
-                                width: 40,
-                                child: Text(
-                                  d,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.textHint,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ))
-                          .toList(),
+                      children:
+                          ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
+                              .map((d) => SizedBox(
+                                    width: 40,
+                                    child: Text(
+                                      d,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.textHint,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ))
+                              .toList(),
                     ),
                     const SizedBox(height: 8),
 
@@ -187,7 +185,8 @@ class _SelectBookingTimeScreenState extends State<SelectBookingTimeScreen> {
                             onTap: () async {
                               final time = await showTimePicker(
                                 context: context,
-                                initialTime: const TimeOfDay(hour: 10, minute: 0),
+                                initialTime:
+                                    const TimeOfDay(hour: 10, minute: 0),
                               );
                               if (time != null) {
                                 setState(() {
@@ -206,7 +205,8 @@ class _SelectBookingTimeScreenState extends State<SelectBookingTimeScreen> {
                             onTap: () async {
                               final time = await showTimePicker(
                                 context: context,
-                                initialTime: const TimeOfDay(hour: 13, minute: 0),
+                                initialTime:
+                                    const TimeOfDay(hour: 13, minute: 0),
                               );
                               if (time != null) {
                                 setState(() {
@@ -523,8 +523,18 @@ class _SelectBookingTimeScreenState extends State<SelectBookingTimeScreen> {
 
   String _getMonthYear() {
     const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
     ];
     return '${months[_currentMonth.month - 1]} ${_currentMonth.year}';
   }
@@ -598,22 +608,16 @@ class _MiniMapPainter extends CustomPainter {
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), bgPaint);
 
     final roadPaint = Paint()
-      ..color = Colors.white.withOpacity(0.4)
+      ..color = Colors.white.withValues(alpha: 0.4)
       ..strokeWidth = 3
       ..style = PaintingStyle.stroke;
 
-    canvas.drawLine(
-        Offset(0, size.height * 0.5),
-        Offset(size.width, size.height * 0.5),
-        roadPaint);
-    canvas.drawLine(
-        Offset(size.width * 0.3, 0),
-        Offset(size.width * 0.3, size.height),
-        roadPaint);
-    canvas.drawLine(
-        Offset(size.width * 0.7, 0),
-        Offset(size.width * 0.7, size.height),
-        roadPaint);
+    canvas.drawLine(Offset(0, size.height * 0.5),
+        Offset(size.width, size.height * 0.5), roadPaint);
+    canvas.drawLine(Offset(size.width * 0.3, 0),
+        Offset(size.width * 0.3, size.height), roadPaint);
+    canvas.drawLine(Offset(size.width * 0.7, 0),
+        Offset(size.width * 0.7, size.height), roadPaint);
   }
 
   @override

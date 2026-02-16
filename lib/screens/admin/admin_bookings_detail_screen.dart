@@ -103,7 +103,7 @@ class _AdminBookingsDetailScreenState extends State<AdminBookingsDetailScreen>
                                 style: GoogleFonts.poppins(fontSize: 48, fontWeight: FontWeight.w800, color: Colors.white, height: 1)),
                             const SizedBox(height: 4),
                             Text('Total Bookings',
-                                style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white.withOpacity(0.85))),
+                                style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white.withValues(alpha: 0.85))),
                           ],
                         ),
                         const Spacer(),
@@ -147,8 +147,8 @@ class _AdminBookingsDetailScreenState extends State<AdminBookingsDetailScreen>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(width: 80, height: 80, decoration: BoxDecoration(color: AppColors.success.withOpacity(0.08), shape: BoxShape.circle),
-                      child: Icon(Icons.calendar_today, size: 40, color: AppColors.success.withOpacity(0.4))),
+                    Container(width: 80, height: 80, decoration: BoxDecoration(color: AppColors.success.withValues(alpha: 0.08), shape: BoxShape.circle),
+                      child: Icon(Icons.calendar_today, size: 40, color: AppColors.success.withValues(alpha: 0.4))),
                     const SizedBox(height: 16),
                     Text('No bookings found', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
                     const SizedBox(height: 4),
@@ -168,13 +168,13 @@ class _AdminBookingsDetailScreenState extends State<AdminBookingsDetailScreen>
   Widget _pill(IconData icon, String count, String label) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(color: Colors.white.withOpacity(0.15), borderRadius: BorderRadius.circular(20)),
+      decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(20)),
       child: Row(mainAxisSize: MainAxisSize.min, children: [
-        Icon(icon, size: 14, color: Colors.white.withOpacity(0.9)),
+        Icon(icon, size: 14, color: Colors.white.withValues(alpha: 0.9)),
         const SizedBox(width: 6),
         Text(count, style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white)),
         const SizedBox(width: 4),
-        Text(label, style: GoogleFonts.poppins(fontSize: 11, color: Colors.white.withOpacity(0.75))),
+        Text(label, style: GoogleFonts.poppins(fontSize: 11, color: Colors.white.withValues(alpha: 0.75))),
       ]),
     );
   }
@@ -186,7 +186,7 @@ class _AdminBookingsDetailScreenState extends State<AdminBookingsDetailScreen>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 4))],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4))],
       ),
       child: Column(
         children: [
@@ -209,7 +209,7 @@ class _AdminBookingsDetailScreenState extends State<AdminBookingsDetailScreen>
                     padding: const EdgeInsets.all(2.5),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      gradient: LinearGradient(colors: [sc, sc.withOpacity(0.4)]),
+                      gradient: LinearGradient(colors: [sc, sc.withValues(alpha: 0.4)]),
                     ),
                     child: CircleAvatar(
                       radius: 20, backgroundColor: Colors.white,
@@ -232,8 +232,8 @@ class _AdminBookingsDetailScreenState extends State<AdminBookingsDetailScreen>
                     const SizedBox(height: 2),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(color: sc.withOpacity(0.1), borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: sc.withOpacity(0.3), width: 0.5)),
+                      decoration: BoxDecoration(color: sc.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: sc.withValues(alpha: 0.3), width: 0.5)),
                       child: Row(mainAxisSize: MainAxisSize.min, children: [
                         Icon(_si(b.status), size: 12, color: sc),
                         const SizedBox(width: 4),

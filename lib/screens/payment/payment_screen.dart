@@ -30,7 +30,7 @@ class PaymentScreen extends StatefulWidget {
 
 class _PaymentScreenState extends State<PaymentScreen> {
   bool _agreedToTerms = false;
-  String _couponCode = '';
+  String _couponCode = ''; // ignore: unused_field
 
   double get basePrice => widget.spot.pricePerHour * widget.duration;
   double get serviceFee => basePrice * 0.1;
@@ -53,8 +53,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back,
-                        color: AppColors.primary),
+                    icon:
+                        const Icon(Icons.arrow_back, color: AppColors.primary),
                     onPressed: () => Navigator.pop(context),
                   ),
                   Expanded(
@@ -89,7 +89,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                            color: AppColors.cardBorder.withOpacity(0.5)),
+                            color: AppColors.cardBorder.withValues(alpha: 0.5)),
                       ),
                       child: Row(
                         children: [
@@ -119,7 +119,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 8, vertical: 2),
                                   decoration: BoxDecoration(
-                                    color: AppColors.primary.withOpacity(0.1),
+                                    color: AppColors.primary
+                                        .withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: Text(
@@ -147,13 +148,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                 Row(
                                   children: [
                                     const Icon(Icons.location_on,
-                                        size: 14,
-                                        color: AppColors.primary),
+                                        size: 14, color: AppColors.primary),
                                     const SizedBox(width: 4),
                                     Expanded(
                                       child: Text(
-                                        spot.address.split(',').first +
-                                            ', Bangalore',
+                                        '${spot.address.split(',').first}, Bangalore',
                                         style: GoogleFonts.poppins(
                                           fontSize: 12,
                                           color: AppColors.textSecondary,
@@ -182,11 +181,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             bottom: Radius.circular(16)),
                         border: Border(
                           left: BorderSide(
-                              color: AppColors.cardBorder.withOpacity(0.5)),
+                              color:
+                                  AppColors.cardBorder.withValues(alpha: 0.5)),
                           right: BorderSide(
-                              color: AppColors.cardBorder.withOpacity(0.5)),
+                              color:
+                                  AppColors.cardBorder.withValues(alpha: 0.5)),
                           bottom: BorderSide(
-                              color: AppColors.cardBorder.withOpacity(0.5)),
+                              color:
+                                  AppColors.cardBorder.withValues(alpha: 0.5)),
                         ),
                       ),
                       child: Row(
@@ -281,7 +283,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                            color: AppColors.cardBorder.withOpacity(0.5)),
+                            color: AppColors.cardBorder.withValues(alpha: 0.5)),
                       ),
                       child: Row(
                         children: [
@@ -356,7 +358,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(
-                            color: AppColors.cardBorder.withOpacity(0.5)),
+                            color: AppColors.cardBorder.withValues(alpha: 0.5)),
                       ),
                       child: Row(
                         children: [
@@ -399,7 +401,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                            color: AppColors.cardBorder.withOpacity(0.5)),
+                            color: AppColors.cardBorder.withValues(alpha: 0.5)),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -420,8 +422,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           _buildPriceRow('Service Fee',
                               '\u20B9${serviceFee.toStringAsFixed(2)}'),
                           const SizedBox(height: 10),
-                          _buildPriceRow('GST (18%)',
-                              '\u20B9${gst.toStringAsFixed(2)}'),
+                          _buildPriceRow(
+                              'GST (18%)', '\u20B9${gst.toStringAsFixed(2)}'),
                           const SizedBox(height: 14),
                           const Divider(),
                           const SizedBox(height: 10),
@@ -463,8 +465,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             child: Checkbox(
                               value: _agreedToTerms,
                               onChanged: (val) {
-                                setState(
-                                    () => _agreedToTerms = val ?? false);
+                                setState(() => _agreedToTerms = val ?? false);
                               },
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(6),
@@ -481,8 +482,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                   color: AppColors.textSecondary,
                                 ),
                                 children: [
-                                  const TextSpan(
-                                      text: 'I agree to the '),
+                                  const TextSpan(text: 'I agree to the '),
                                   TextSpan(
                                     text: 'Cancellation Policy',
                                     style: GoogleFonts.poppins(
@@ -501,8 +501,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                     ),
                                   ),
                                   const TextSpan(
-                                      text:
-                                          ' of Smart Park Connect.'),
+                                      text: ' of Smart Park Connect.'),
                                 ],
                               ),
                             ),
@@ -526,7 +525,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.06),
+              color: Colors.black.withValues(alpha: 0.06),
               blurRadius: 16,
               offset: const Offset(0, -4),
             ),

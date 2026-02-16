@@ -174,16 +174,17 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
 
   Future<void> _loadPaymentMethods() async {
     setState(() => isLoading = true);
-    
+
     try {
       final prefs = await SharedPreferences.getInstance();
       final String? methodsJson = prefs.getString('payment_methods');
-      
+
       if (methodsJson != null) {
         final List<dynamic> decoded = json.decode(methodsJson);
         setState(() {
           paymentMethods = decoded
-              .map((item) => PaymentMethod.fromJson(item as Map<String, dynamic>))
+              .map((item) =>
+                  PaymentMethod.fromJson(item as Map<String, dynamic>))
               .toList();
         });
       }
@@ -278,7 +279,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withValues(alpha: 0.2),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -370,7 +371,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, -5),
                 ),
@@ -415,7 +416,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
             width: 120,
             height: 120,
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
+              color: AppColors.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -467,13 +468,13 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: method.isDefault
-              ? AppColors.primary.withOpacity(0.5)
-              : AppColors.cardBorder.withOpacity(0.5),
+              ? AppColors.primary.withValues(alpha: 0.5)
+              : AppColors.cardBorder.withValues(alpha: 0.5),
           width: method.isDefault ? 2 : 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -482,12 +483,13 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
       child: Column(
         children: [
           ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             leading: Container(
               width: 50,
               height: 50,
               decoration: BoxDecoration(
-                color: method.iconColor.withOpacity(0.1),
+                color: method.iconColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(method.icon, color: method.iconColor, size: 28),
@@ -506,9 +508,10 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                 ),
                 if (method.isDefault)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: AppColors.success.withOpacity(0.1),
+                      color: AppColors.success.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -550,7 +553,8 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                     value: 'default',
                     child: Row(
                       children: [
-                        const Icon(Icons.check_circle, color: AppColors.success, size: 20),
+                        const Icon(Icons.check_circle,
+                            color: AppColors.success, size: 20),
                         const SizedBox(width: 12),
                         Text(
                           'Set as Default',
@@ -563,7 +567,8 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                   value: 'delete',
                   child: Row(
                     children: [
-                      const Icon(Icons.delete, color: AppColors.error, size: 20),
+                      const Icon(Icons.delete,
+                          color: AppColors.error, size: 20),
                       const SizedBox(width: 12),
                       Text(
                         'Delete',
@@ -618,21 +623,6 @@ class _AddPaymentMethodSheetState extends State<_AddPaymentMethodSheet> {
     if (number.startsWith('3')) return 'amex';
     if (number.startsWith('6')) return 'rupay';
     return 'card';
-  }
-
-  String _getCardBrandIcon(String brand) {
-    switch (brand) {
-      case 'visa':
-        return 'VISA';
-      case 'mastercard':
-        return 'MC';
-      case 'amex':
-        return 'AMEX';
-      case 'rupay':
-        return 'RuPay';
-      default:
-        return 'CARD';
-    }
   }
 
   void _savePaymentMethod() {
@@ -720,7 +710,8 @@ class _AddPaymentMethodSheetState extends State<_AddPaymentMethodSheet> {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: _buildTypeOption('UPI', 'upi', Icons.account_balance),
+                    child:
+                        _buildTypeOption('UPI', 'upi', Icons.account_balance),
                   ),
                 ],
               ),
@@ -743,7 +734,8 @@ class _AddPaymentMethodSheetState extends State<_AddPaymentMethodSheet> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: CheckboxListTile(
                 value: _isDefault,
-                onChanged: (value) => setState(() => _isDefault = value ?? false),
+                onChanged: (value) =>
+                    setState(() => _isDefault = value ?? false),
                 title: Text(
                   'Set as default payment method',
                   style: GoogleFonts.poppins(
@@ -807,7 +799,9 @@ class _AddPaymentMethodSheetState extends State<_AddPaymentMethodSheet> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.transparent,
+          color: isSelected
+              ? AppColors.primary.withValues(alpha: 0.1)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? AppColors.primary : AppColors.cardBorder,
@@ -920,7 +914,8 @@ class _AddPaymentMethodSheetState extends State<_AddPaymentMethodSheet> {
                 decoration: InputDecoration(
                   labelText: 'Expiry (MM/YY)',
                   hintText: '12/26',
-                  prefixIcon: const Icon(Icons.calendar_today, color: AppColors.primary),
+                  prefixIcon: const Icon(Icons.calendar_today,
+                      color: AppColors.primary),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(color: AppColors.cardBorder),
@@ -931,7 +926,8 @@ class _AddPaymentMethodSheetState extends State<_AddPaymentMethodSheet> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                    borderSide:
+                        const BorderSide(color: AppColors.primary, width: 2),
                   ),
                   counterText: '',
                 ),
@@ -972,7 +968,8 @@ class _AddPaymentMethodSheetState extends State<_AddPaymentMethodSheet> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                    borderSide:
+                        const BorderSide(color: AppColors.primary, width: 2),
                   ),
                   counterText: '',
                 ),
@@ -1006,7 +1003,8 @@ class _AddPaymentMethodSheetState extends State<_AddPaymentMethodSheet> {
           decoration: InputDecoration(
             labelText: 'UPI ID',
             hintText: 'name@upi',
-            prefixIcon: const Icon(Icons.account_balance, color: AppColors.success),
+            prefixIcon:
+                const Icon(Icons.account_balance, color: AppColors.success),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: AppColors.cardBorder),
@@ -1035,7 +1033,7 @@ class _AddPaymentMethodSheetState extends State<_AddPaymentMethodSheet> {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.info.withOpacity(0.1),
+            color: AppColors.info.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(

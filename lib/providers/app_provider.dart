@@ -9,7 +9,7 @@ import '../services/local_storage_service.dart';
 /// All data is persisted locally via SharedPreferences
 class AppProvider extends ChangeNotifier {
   // ---------- THEME ----------
-  ThemeMode _themeMode = ThemeMode.light;
+  final ThemeMode _themeMode = ThemeMode.light;
   ThemeMode get themeMode => _themeMode;
 
   // ---------- AUTH STATE ----------
@@ -58,7 +58,7 @@ class AppProvider extends ChangeNotifier {
       password: password,
       role: role,
       isVerifiedOwner: false, // Always false until admin approval
-      approvalStatus: role == UserRole.owner 
+      approvalStatus: role == UserRole.owner
           ? ApprovalStatus.pending // Owners need admin approval
           : ApprovalStatus.approved, // Users and admins are auto-approved
     );
@@ -238,13 +238,11 @@ class AppProvider extends ChangeNotifier {
     if (currentUser.role == UserRole.admin) return _allBookings;
     if (currentUser.role == UserRole.owner) {
       return _allBookings
-          .where((b) =>
-              b.ownerId == currentUser.id || b.userId == currentUser.id)
+          .where(
+              (b) => b.ownerId == currentUser.id || b.userId == currentUser.id)
           .toList();
     }
-    return _allBookings
-        .where((b) => b.userId == currentUser.id)
-        .toList();
+    return _allBookings.where((b) => b.userId == currentUser.id).toList();
   }
 
   /// All bookings (for admin)
@@ -287,8 +285,9 @@ class AppProvider extends ChangeNotifier {
   // ---------- ADMIN STATS ----------
   int get totalUsersCount => _allUsers.length;
   int get totalSpotsCount => _parkingSpots.length;
-  int get activeBookingsCount =>
-      _allBookings.where((b) => b.status == 'confirmed' || b.status == 'active').length;
+  int get activeBookingsCount => _allBookings
+      .where((b) => b.status == 'confirmed' || b.status == 'active')
+      .length;
   double get totalRevenue =>
       _allBookings.fold(0.0, (sum, b) => sum + b.totalPrice);
 

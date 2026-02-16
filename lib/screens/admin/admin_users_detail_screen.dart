@@ -31,19 +31,14 @@ class _AdminUsersDetailScreenState extends State<AdminUsersDetailScreen>
 
   List<UserModel> _filter(List<UserModel> users) {
     switch (_tabController.index) {
-      case 1: return users.where((u) => u.role == UserRole.admin).toList();
-      case 2: return users.where((u) => u.role == UserRole.owner).toList();
-      case 3: return users.where((u) => u.role == UserRole.user).toList();
-      default: return users;
-    }
-  }
-
-  int _count(List<UserModel> users, int tab) {
-    switch (tab) {
-      case 1: return users.where((u) => u.role == UserRole.admin).length;
-      case 2: return users.where((u) => u.role == UserRole.owner).length;
-      case 3: return users.where((u) => u.role == UserRole.user).length;
-      default: return users.length;
+      case 1:
+        return users.where((u) => u.role == UserRole.admin).toList();
+      case 2:
+        return users.where((u) => u.role == UserRole.owner).toList();
+      case 3:
+        return users.where((u) => u.role == UserRole.user).toList();
+      default:
+        return users;
     }
   }
 
@@ -63,7 +58,8 @@ class _AdminUsersDetailScreenState extends State<AdminUsersDetailScreen>
             pinned: true,
             backgroundColor: AppColors.primary,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+              icon: const Icon(Icons.arrow_back_ios_new,
+                  color: Colors.white, size: 20),
               onPressed: () => Navigator.pop(context),
             ),
             flexibleSpace: FlexibleSpaceBar(
@@ -85,10 +81,18 @@ class _AdminUsersDetailScreenState extends State<AdminUsersDetailScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('Users',
-                                style: GoogleFonts.poppins(fontSize: 28, fontWeight: FontWeight.w800, color: Colors.white, height: 1)),
+                                style: GoogleFonts.poppins(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white,
+                                    height: 1)),
                             const SizedBox(height: 4),
                             Text('Manage all platform users',
-                                style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.white.withOpacity(0.85))),
+                                style: GoogleFonts.poppins(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                    color:
+                                        Colors.white.withValues(alpha: 0.85))),
                           ],
                         ),
                         const Spacer(),
@@ -112,8 +116,10 @@ class _AdminUsersDetailScreenState extends State<AdminUsersDetailScreen>
                   indicatorColor: AppColors.primary,
                   indicatorWeight: 3,
                   indicatorSize: TabBarIndicatorSize.label,
-                  labelStyle: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600),
-                  unselectedLabelStyle: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w500),
+                  labelStyle: GoogleFonts.poppins(
+                      fontSize: 13, fontWeight: FontWeight.w600),
+                  unselectedLabelStyle: GoogleFonts.poppins(
+                      fontSize: 13, fontWeight: FontWeight.w500),
                   tabs: List.generate(4, (i) => Tab(text: tabs[i])),
                 ),
               ),
@@ -126,14 +132,25 @@ class _AdminUsersDetailScreenState extends State<AdminUsersDetailScreen>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      width: 80, height: 80,
-                      decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.08), shape: BoxShape.circle),
-                      child: Icon(Icons.people_outline, size: 40, color: AppColors.primary.withOpacity(0.4)),
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.08),
+                          shape: BoxShape.circle),
+                      child: Icon(Icons.people_outline,
+                          size: 40,
+                          color: AppColors.primary.withValues(alpha: 0.4)),
                     ),
                     const SizedBox(height: 16),
-                    Text('No users found', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
+                    Text('No users found',
+                        style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textSecondary)),
                     const SizedBox(height: 4),
-                    Text('Try a different filter', style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textHint)),
+                    Text('Try a different filter',
+                        style: GoogleFonts.poppins(
+                            fontSize: 13, color: AppColors.textHint)),
                   ],
                 ),
               )
@@ -142,23 +159,6 @@ class _AdminUsersDetailScreenState extends State<AdminUsersDetailScreen>
                 itemCount: filtered.length,
                 itemBuilder: (_, i) => _buildUserCard(filtered[i]),
               ),
-      ),
-    );
-  }
-
-  Widget _miniPill(IconData icon, String count, String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(color: Colors.white.withOpacity(0.15), borderRadius: BorderRadius.circular(20)),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: Colors.white.withOpacity(0.9)),
-          const SizedBox(width: 6),
-          Text(count, style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white)),
-          const SizedBox(width: 4),
-          Text(label, style: GoogleFonts.poppins(fontSize: 11, color: Colors.white.withOpacity(0.75))),
-        ],
       ),
     );
   }
@@ -172,7 +172,12 @@ class _AdminUsersDetailScreenState extends State<AdminUsersDetailScreen>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 4))],
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 12,
+              offset: const Offset(0, 4))
+        ],
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -183,14 +188,20 @@ class _AdminUsersDetailScreenState extends State<AdminUsersDetailScreen>
               padding: const EdgeInsets.all(2.5),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: LinearGradient(colors: [roleColor, roleColor.withOpacity(0.4)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+                gradient: LinearGradient(
+                    colors: [roleColor, roleColor.withValues(alpha: 0.4)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight),
               ),
               child: CircleAvatar(
                 radius: 24,
                 backgroundColor: Colors.white,
                 child: Text(
                   user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
-                  style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w700, color: roleColor),
+                  style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: roleColor),
                 ),
               ),
             ),
@@ -199,21 +210,32 @@ class _AdminUsersDetailScreenState extends State<AdminUsersDetailScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(user.name, style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+                  Text(user.name,
+                      style: GoogleFonts.poppins(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary)),
                   const SizedBox(height: 2),
-                  Text(user.email, style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textSecondary)),
+                  Text(user.email,
+                      style: GoogleFonts.poppins(
+                          fontSize: 12, color: AppColors.textSecondary)),
                   if (user.phone.isNotEmpty) ...[
                     const SizedBox(height: 1),
-                    Text(user.phone, style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textHint)),
+                    Text(user.phone,
+                        style: GoogleFonts.poppins(
+                            fontSize: 11, color: AppColors.textHint)),
                   ],
                   const SizedBox(height: 8),
                   Wrap(
-                    spacing: 6, runSpacing: 4,
+                    spacing: 6,
+                    runSpacing: 4,
                     children: [
-                      _statChip(Icons.calendar_today_outlined, '${user.totalBookings}'),
+                      _statChip(Icons.calendar_today_outlined,
+                          '${user.totalBookings}'),
                       if (user.role == UserRole.owner) ...[
                         _statChip(Icons.local_parking, '${user.totalParkings}'),
-                        _statChip(Icons.account_balance_wallet_outlined, '₹${user.earnings.toStringAsFixed(0)}'),
+                        _statChip(Icons.account_balance_wallet_outlined,
+                            '₹${user.earnings.toStringAsFixed(0)}'),
                       ],
                     ],
                   ),
@@ -225,12 +247,20 @@ class _AdminUsersDetailScreenState extends State<AdminUsersDetailScreen>
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(colors: [roleColor.withOpacity(0.15), roleColor.withOpacity(0.08)]),
+                    gradient: LinearGradient(colors: [
+                      roleColor.withValues(alpha: 0.15),
+                      roleColor.withValues(alpha: 0.08)
+                    ]),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Text(roleLabel, style: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w600, color: roleColor)),
+                  child: Text(roleLabel,
+                      style: GoogleFonts.poppins(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: roleColor)),
                 ),
                 if (user.role == UserRole.owner) ...[
                   const SizedBox(height: 6),
@@ -247,48 +277,83 @@ class _AdminUsersDetailScreenState extends State<AdminUsersDetailScreen>
   Widget _statChip(IconData icon, String text) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(color: AppColors.backgroundLight, borderRadius: BorderRadius.circular(8)),
+      decoration: BoxDecoration(
+          color: AppColors.backgroundLight,
+          borderRadius: BorderRadius.circular(8)),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 11, color: AppColors.textHint),
           const SizedBox(width: 4),
-          Text(text, style: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w500, color: AppColors.textSecondary)),
+          Text(text,
+              style: GoogleFonts.poppins(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textSecondary)),
         ],
       ),
     );
   }
 
   Widget _approvalBadge(UserModel user) {
-    Color c; String t;
+    Color c;
+    String t;
     switch (user.approvalStatus) {
-      case ApprovalStatus.approved: c = AppColors.success; t = 'Approved'; break;
-      case ApprovalStatus.pending: c = AppColors.warning; t = 'Pending'; break;
-      case ApprovalStatus.rejected: c = AppColors.error; t = 'Rejected'; break;
+      case ApprovalStatus.approved:
+        c = AppColors.success;
+        t = 'Approved';
+        break;
+      case ApprovalStatus.pending:
+        c = AppColors.warning;
+        t = 'Pending';
+        break;
+      case ApprovalStatus.rejected:
+        c = AppColors.error;
+        t = 'Rejected';
+        break;
     }
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: c.withOpacity(0.1),
+        color: c.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: c.withOpacity(0.3), width: 0.5),
+        border: Border.all(color: c.withValues(alpha: 0.3), width: 0.5),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(width: 6, height: 6, decoration: BoxDecoration(color: c, shape: BoxShape.circle)),
+          Container(
+              width: 6,
+              height: 6,
+              decoration: BoxDecoration(color: c, shape: BoxShape.circle)),
           const SizedBox(width: 5),
-          Text(t, style: GoogleFonts.poppins(fontSize: 10, fontWeight: FontWeight.w600, color: c)),
+          Text(t,
+              style: GoogleFonts.poppins(
+                  fontSize: 10, fontWeight: FontWeight.w600, color: c)),
         ],
       ),
     );
   }
 
   String _roleLabel(UserRole role) {
-    switch (role) { case UserRole.admin: return 'Admin'; case UserRole.owner: return 'Owner'; case UserRole.user: return 'Driver'; }
+    switch (role) {
+      case UserRole.admin:
+        return 'Admin';
+      case UserRole.owner:
+        return 'Owner';
+      case UserRole.user:
+        return 'Driver';
+    }
   }
 
   Color _roleColor(UserRole role) {
-    switch (role) { case UserRole.admin: return AppColors.error; case UserRole.owner: return AppColors.accent; case UserRole.user: return AppColors.info; }
+    switch (role) {
+      case UserRole.admin:
+        return AppColors.error;
+      case UserRole.owner:
+        return AppColors.accent;
+      case UserRole.user:
+        return AppColors.info;
+    }
   }
 }

@@ -9,7 +9,8 @@ class AdminSpacesDetailScreen extends StatefulWidget {
   const AdminSpacesDetailScreen({super.key});
 
   @override
-  State<AdminSpacesDetailScreen> createState() => _AdminSpacesDetailScreenState();
+  State<AdminSpacesDetailScreen> createState() =>
+      _AdminSpacesDetailScreenState();
 }
 
 class _AdminSpacesDetailScreenState extends State<AdminSpacesDetailScreen>
@@ -24,28 +25,35 @@ class _AdminSpacesDetailScreenState extends State<AdminSpacesDetailScreen>
   }
 
   @override
-  void dispose() { _tabController.dispose(); super.dispose(); }
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   List<ParkingSpot> _filter(List<ParkingSpot> spots) {
     switch (_tabController.index) {
-      case 1: return spots.where((s) => s.status == 'approved').toList();
-      case 2: return spots.where((s) => s.status == 'pending').toList();
-      case 3: return spots.where((s) => s.status == 'rejected').toList();
-      default: return spots;
-    }
-  }
-
-  int _cnt(List<ParkingSpot> spots, int tab) {
-    switch (tab) {
-      case 1: return spots.where((s) => s.status == 'approved').length;
-      case 2: return spots.where((s) => s.status == 'pending').length;
-      case 3: return spots.where((s) => s.status == 'rejected').length;
-      default: return spots.length;
+      case 1:
+        return spots.where((s) => s.status == 'approved').toList();
+      case 2:
+        return spots.where((s) => s.status == 'pending').toList();
+      case 3:
+        return spots.where((s) => s.status == 'rejected').toList();
+      default:
+        return spots;
     }
   }
 
   Color _statusColor(String s) {
-    switch (s) { case 'approved': return AppColors.success; case 'pending': return AppColors.warning; case 'rejected': return AppColors.error; default: return AppColors.textHint; }
+    switch (s) {
+      case 'approved':
+        return AppColors.success;
+      case 'pending':
+        return AppColors.warning;
+      case 'rejected':
+        return AppColors.error;
+      default:
+        return AppColors.textHint;
+    }
   }
 
   @override
@@ -64,14 +72,16 @@ class _AdminSpacesDetailScreenState extends State<AdminSpacesDetailScreen>
             pinned: true,
             backgroundColor: AppColors.accent,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+              icon: const Icon(Icons.arrow_back_ios_new,
+                  color: Colors.white, size: 20),
               onPressed: () => Navigator.pop(context),
             ),
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    begin: Alignment.topLeft, end: Alignment.bottomRight,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                     colors: [Color(0xFF7C3AED), Color(0xFF5B4CFF)],
                   ),
                 ),
@@ -85,10 +95,18 @@ class _AdminSpacesDetailScreenState extends State<AdminSpacesDetailScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('Parking Spaces',
-                                style: GoogleFonts.poppins(fontSize: 28, fontWeight: FontWeight.w800, color: Colors.white, height: 1)),
+                                style: GoogleFonts.poppins(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white,
+                                    height: 1)),
                             const SizedBox(height: 4),
                             Text('Manage all parking locations',
-                                style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.white.withOpacity(0.85))),
+                                style: GoogleFonts.poppins(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                    color:
+                                        Colors.white.withValues(alpha: 0.85))),
                           ],
                         ),
                         const Spacer(),
@@ -101,7 +119,10 @@ class _AdminSpacesDetailScreenState extends State<AdminSpacesDetailScreen>
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(52),
               child: Container(
-                decoration: const BoxDecoration(color: Colors.white, borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+                decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(24))),
                 child: TabBar(
                   controller: _tabController,
                   labelColor: AppColors.accent,
@@ -109,8 +130,10 @@ class _AdminSpacesDetailScreenState extends State<AdminSpacesDetailScreen>
                   indicatorColor: AppColors.accent,
                   indicatorWeight: 3,
                   indicatorSize: TabBarIndicatorSize.label,
-                  labelStyle: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600),
-                  unselectedLabelStyle: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w500),
+                  labelStyle: GoogleFonts.poppins(
+                      fontSize: 13, fontWeight: FontWeight.w600),
+                  unselectedLabelStyle: GoogleFonts.poppins(
+                      fontSize: 13, fontWeight: FontWeight.w500),
                   tabs: List.generate(4, (i) => Tab(text: tabs[i])),
                 ),
               ),
@@ -122,12 +145,25 @@ class _AdminSpacesDetailScreenState extends State<AdminSpacesDetailScreen>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(width: 80, height: 80, decoration: BoxDecoration(color: AppColors.accent.withOpacity(0.08), shape: BoxShape.circle),
-                      child: Icon(Icons.local_parking, size: 40, color: AppColors.accent.withOpacity(0.4))),
+                    Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                            color: AppColors.accent.withValues(alpha: 0.08),
+                            shape: BoxShape.circle),
+                        child: Icon(Icons.local_parking,
+                            size: 40,
+                            color: AppColors.accent.withValues(alpha: 0.4))),
                     const SizedBox(height: 16),
-                    Text('No spaces found', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
+                    Text('No spaces found',
+                        style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textSecondary)),
                     const SizedBox(height: 4),
-                    Text('Try a different filter', style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textHint)),
+                    Text('Try a different filter',
+                        style: GoogleFonts.poppins(
+                            fontSize: 13, color: AppColors.textHint)),
                   ],
                 ),
               )
@@ -140,20 +176,6 @@ class _AdminSpacesDetailScreenState extends State<AdminSpacesDetailScreen>
     );
   }
 
-  Widget _pill(IconData icon, String count, String label, Color dotColor) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(color: Colors.white.withOpacity(0.15), borderRadius: BorderRadius.circular(20)),
-      child: Row(mainAxisSize: MainAxisSize.min, children: [
-        Container(width: 8, height: 8, decoration: BoxDecoration(color: dotColor, shape: BoxShape.circle)),
-        const SizedBox(width: 6),
-        Text(count, style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white)),
-        const SizedBox(width: 4),
-        Text(label, style: GoogleFonts.poppins(fontSize: 11, color: Colors.white.withOpacity(0.75))),
-      ]),
-    );
-  }
-
   Widget _spaceCard(ParkingSpot spot) {
     final sc = _statusColor(spot.status);
     return Container(
@@ -161,7 +183,12 @@ class _AdminSpacesDetailScreenState extends State<AdminSpacesDetailScreen>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 14, offset: const Offset(0, 4))],
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 14,
+              offset: const Offset(0, 4))
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -170,40 +197,76 @@ class _AdminSpacesDetailScreenState extends State<AdminSpacesDetailScreen>
           Stack(
             children: [
               ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                child: Image.network(spot.imageUrl, height: 140, width: double.infinity, fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(height: 140, width: double.infinity,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(colors: [AppColors.accent.withOpacity(0.1), AppColors.primary.withOpacity(0.05)]),
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                    ),
-                    child: const Center(child: Icon(Icons.local_parking, size: 48, color: AppColors.textHint)))),
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(20)),
+                child: Image.network(spot.imageUrl,
+                    height: 140,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                        height: 140,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(colors: [
+                            AppColors.accent.withValues(alpha: 0.1),
+                            AppColors.primary.withValues(alpha: 0.05)
+                          ]),
+                          borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(20)),
+                        ),
+                        child: const Center(
+                            child: Icon(Icons.local_parking,
+                                size: 48, color: AppColors.textHint)))),
               ),
               // Gradient overlay
               Positioned.fill(
                 child: Container(
                   decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                    gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter,
-                      colors: [Colors.transparent, Colors.black.withOpacity(0.4)]),
+                    borderRadius:
+                        const BorderRadius.vertical(top: Radius.circular(20)),
+                    gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withValues(alpha: 0.4)
+                        ]),
                   ),
                 ),
               ),
               // Status badge
-              Positioned(top: 12, right: 12,
+              Positioned(
+                top: 12,
+                right: 12,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(color: sc, borderRadius: BorderRadius.circular(8)),
-                  child: Text(spot.status.toUpperCase(), style: GoogleFonts.poppins(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 0.5)),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                      color: sc, borderRadius: BorderRadius.circular(8)),
+                  child: Text(spot.status.toUpperCase(),
+                      style: GoogleFonts.poppins(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          letterSpacing: 0.5)),
                 ),
               ),
               // Price badge
-              Positioned(bottom: 12, left: 12,
+              Positioned(
+                bottom: 12,
+                left: 12,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
-                  child: Text('\u20B9${spot.pricePerHour.toStringAsFixed(0)}/hr',
-                      style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8)),
+                  child: Text(
+                      '\u20B9${spot.pricePerHour.toStringAsFixed(0)}/hr',
+                      style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimary)),
                 ),
               ),
             ],
@@ -214,25 +277,41 @@ class _AdminSpacesDetailScreenState extends State<AdminSpacesDetailScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(spot.name, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+                Text(spot.name,
+                    style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary)),
                 const SizedBox(height: 4),
                 Row(children: [
-                  Icon(Icons.person_outline, size: 14, color: AppColors.textHint),
+                  Icon(Icons.person_outline,
+                      size: 14, color: AppColors.textHint),
                   const SizedBox(width: 4),
-                  Text(spot.ownerName, style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textSecondary)),
+                  Text(spot.ownerName,
+                      style: GoogleFonts.poppins(
+                          fontSize: 12, color: AppColors.textSecondary)),
                 ]),
                 const SizedBox(height: 2),
                 Row(children: [
-                  Icon(Icons.location_on_outlined, size: 14, color: AppColors.textHint),
+                  Icon(Icons.location_on_outlined,
+                      size: 14, color: AppColors.textHint),
                   const SizedBox(width: 4),
-                  Expanded(child: Text(spot.address, style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textHint), maxLines: 1, overflow: TextOverflow.ellipsis)),
+                  Expanded(
+                      child: Text(spot.address,
+                          style: GoogleFonts.poppins(
+                              fontSize: 12, color: AppColors.textHint),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis)),
                 ]),
                 const SizedBox(height: 12),
                 // Info chips
                 Wrap(spacing: 8, runSpacing: 6, children: [
-                  _chip(Icons.directions_car_outlined, spot.type[0].toUpperCase() + spot.type.substring(1)),
+                  _chip(Icons.directions_car_outlined,
+                      spot.type[0].toUpperCase() + spot.type.substring(1)),
                   _chip(Icons.event_seat_outlined, '${spot.capacity} spots'),
-                  ...spot.amenities.take(2).map((a) => _chip(Icons.star_outline, a)),
+                  ...spot.amenities
+                      .take(2)
+                      .map((a) => _chip(Icons.star_outline, a)),
                 ]),
                 // Approve/Reject for pending
                 if (spot.status == 'pending') ...[
@@ -241,26 +320,49 @@ class _AdminSpacesDetailScreenState extends State<AdminSpacesDetailScreen>
                     Expanded(
                       child: OutlinedButton.icon(
                         onPressed: () {
-                          context.read<AppProvider>().rejectParkingSpot(spot.id);
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${spot.name} rejected'), backgroundColor: AppColors.error, behavior: SnackBarBehavior.floating));
+                          context
+                              .read<AppProvider>()
+                              .rejectParkingSpot(spot.id);
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text('${spot.name} rejected'),
+                              backgroundColor: AppColors.error,
+                              behavior: SnackBarBehavior.floating));
                         },
                         icon: const Icon(Icons.close, size: 16),
-                        label: Text('Reject', style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 13)),
-                        style: OutlinedButton.styleFrom(foregroundColor: AppColors.error, side: const BorderSide(color: AppColors.error),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), padding: const EdgeInsets.symmetric(vertical: 12)),
+                        label: Text('Reject',
+                            style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w600, fontSize: 13)),
+                        style: OutlinedButton.styleFrom(
+                            foregroundColor: AppColors.error,
+                            side: const BorderSide(color: AppColors.error),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                            padding: const EdgeInsets.symmetric(vertical: 12)),
                       ),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: ElevatedButton.icon(
                         onPressed: () {
-                          context.read<AppProvider>().approveParkingSpot(spot.id);
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${spot.name} approved!'), backgroundColor: AppColors.success, behavior: SnackBarBehavior.floating));
+                          context
+                              .read<AppProvider>()
+                              .approveParkingSpot(spot.id);
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text('${spot.name} approved!'),
+                              backgroundColor: AppColors.success,
+                              behavior: SnackBarBehavior.floating));
                         },
                         icon: const Icon(Icons.check, size: 16),
-                        label: Text('Approve', style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 13)),
-                        style: ElevatedButton.styleFrom(backgroundColor: AppColors.success, foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), padding: const EdgeInsets.symmetric(vertical: 12), elevation: 0),
+                        label: Text('Approve',
+                            style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w600, fontSize: 13)),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.success,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            elevation: 0),
                       ),
                     ),
                   ]),
@@ -276,11 +378,17 @@ class _AdminSpacesDetailScreenState extends State<AdminSpacesDetailScreen>
   Widget _chip(IconData icon, String text) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(color: AppColors.backgroundLight, borderRadius: BorderRadius.circular(8)),
+      decoration: BoxDecoration(
+          color: AppColors.backgroundLight,
+          borderRadius: BorderRadius.circular(8)),
       child: Row(mainAxisSize: MainAxisSize.min, children: [
         Icon(icon, size: 13, color: AppColors.textHint),
         const SizedBox(width: 4),
-        Text(text, style: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w500, color: AppColors.textSecondary)),
+        Text(text,
+            style: GoogleFonts.poppins(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: AppColors.textSecondary)),
       ]),
     );
   }

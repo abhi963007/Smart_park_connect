@@ -54,7 +54,7 @@ class _BookingsScreenState extends State<BookingsScreen>
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(14),
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 3))],
+                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 10, offset: const Offset(0, 3))],
               ),
               child: TabBar(
                 controller: _tabController,
@@ -90,8 +90,8 @@ class _BookingsScreenState extends State<BookingsScreen>
   Widget _list(List bookings, String emptyTitle, String emptySub, IconData emptyIcon) {
     if (bookings.isEmpty) {
       return Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-        Container(width: 80, height: 80, decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.06), shape: BoxShape.circle),
-          child: Icon(emptyIcon, size: 40, color: AppColors.primary.withOpacity(0.3))),
+        Container(width: 80, height: 80, decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.06), shape: BoxShape.circle),
+          child: Icon(emptyIcon, size: 40, color: AppColors.primary.withValues(alpha: 0.3))),
         const SizedBox(height: 16),
         Text(emptyTitle, style: GoogleFonts.poppins(fontSize: 17, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
         const SizedBox(height: 6),
@@ -113,7 +113,7 @@ class _BookingsScreenState extends State<BookingsScreen>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 4))],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4))],
       ),
       child: Column(children: [
         // Color accent bar
@@ -125,8 +125,8 @@ class _BookingsScreenState extends State<BookingsScreen>
               borderRadius: BorderRadius.circular(14),
               child: Image.network(b.parkingImage, width: 72, height: 72, fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => Container(width: 72, height: 72,
-                  decoration: BoxDecoration(gradient: LinearGradient(colors: [sc.withOpacity(0.1), sc.withOpacity(0.04)]), borderRadius: BorderRadius.circular(14)),
-                  child: Icon(Icons.local_parking, size: 28, color: sc.withOpacity(0.5)))),
+                  decoration: BoxDecoration(gradient: LinearGradient(colors: [sc.withValues(alpha: 0.1), sc.withValues(alpha: 0.04)]), borderRadius: BorderRadius.circular(14)),
+                  child: Icon(Icons.local_parking, size: 28, color: sc.withValues(alpha: 0.5)))),
             ),
             const SizedBox(width: 14),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -140,8 +140,8 @@ class _BookingsScreenState extends State<BookingsScreen>
               const SizedBox(height: 6),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(color: sc.withOpacity(0.1), borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: sc.withOpacity(0.3), width: 0.5)),
+                decoration: BoxDecoration(color: sc.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: sc.withValues(alpha: 0.3), width: 0.5)),
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
                   Icon(_si(b.status), size: 12, color: sc),
                   const SizedBox(width: 4),
@@ -162,7 +162,7 @@ class _BookingsScreenState extends State<BookingsScreen>
               ]),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(gradient: LinearGradient(colors: [AppColors.primary.withOpacity(0.1), AppColors.primary.withOpacity(0.04)]), borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(gradient: LinearGradient(colors: [AppColors.primary.withValues(alpha: 0.1), AppColors.primary.withValues(alpha: 0.04)]), borderRadius: BorderRadius.circular(10)),
                 child: Text('\u20B9${b.totalPrice.toStringAsFixed(0)}', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.primary)),
               ),
             ]),

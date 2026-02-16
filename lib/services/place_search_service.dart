@@ -52,12 +52,17 @@ class PlaceResult {
     return PlaceResult(
       placeId: json['place_id'].toString(),
       displayName: json['display_name'] ?? '',
-      name: json['name'] ?? json['display_name']?.toString().split(',').first.trim() ?? '',
+      name: json['name'] ??
+          json['display_name']?.toString().split(',').first.trim() ??
+          '',
       type: json['type'] ?? '',
       lat: double.tryParse(json['lat'].toString()) ?? 0,
       lon: double.tryParse(json['lon'].toString()) ?? 0,
       road: address['road'] ?? address['suburb'] ?? address['neighbourhood'],
-      city: address['city'] ?? address['town'] ?? address['village'] ?? address['county'],
+      city: address['city'] ??
+          address['town'] ??
+          address['village'] ??
+          address['county'],
       state: address['state'],
       country: address['country'],
     );
@@ -94,7 +99,8 @@ class PlaceResult {
 /// Completely free – no API key required.
 class PlaceSearchService {
   static PlaceSearchService? _instance;
-  static PlaceSearchService get instance => _instance ??= PlaceSearchService._();
+  static PlaceSearchService get instance =>
+      _instance ??= PlaceSearchService._();
   PlaceSearchService._();
 
   static const _baseUrl = 'https://nominatim.openstreetmap.org';
@@ -121,7 +127,7 @@ class PlaceSearchService {
 
     // Bias results near user location if available
     if (nearLatLng != null) {
-      final offset = 0.5; // ~50 km bias box
+      const offset = 0.5; // ~50 km bias box
       params['viewbox'] =
           '${nearLatLng.longitude - offset},${nearLatLng.latitude - offset},'
           '${nearLatLng.longitude + offset},${nearLatLng.latitude + offset}';
@@ -129,14 +135,17 @@ class PlaceSearchService {
     }
 
     try {
-      final uri = Uri.parse('$_baseUrl/search').replace(queryParameters: params);
+      final uri =
+          Uri.parse('$_baseUrl/search').replace(queryParameters: params);
       final response = await http.get(uri, headers: {
         'User-Agent': 'SmartParkConnect/1.0 (parking-app)',
       });
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
-        return data.map((e) => PlaceResult.fromNominatim(e as Map<String, dynamic>)).toList();
+        return data
+            .map((e) => PlaceResult.fromNominatim(e as Map<String, dynamic>))
+            .toList();
       }
     } catch (e) {
       print('PlaceSearchService.search error: $e');
@@ -175,7 +184,8 @@ class PlaceSearchService {
       final prefs = await SharedPreferences.getInstance();
       final raw = prefs.getStringList(_recentKey) ?? [];
       return raw
-          .map((s) => PlaceResult.fromJson(json.decode(s) as Map<String, dynamic>))
+          .map((s) =>
+              PlaceResult.fromJson(json.decode(s) as Map<String, dynamic>))
           .toList();
     } catch (_) {
       return [];
