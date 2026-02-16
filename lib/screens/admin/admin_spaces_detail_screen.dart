@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../providers/app_provider.dart';
 import '../../models/parking_spot.dart';
+import '../../widgets/smart_image.dart';
 
 class AdminSpacesDetailScreen extends StatefulWidget {
   const AdminSpacesDetailScreen({super.key});
@@ -196,27 +197,13 @@ class _AdminSpacesDetailScreenState extends State<AdminSpacesDetailScreen>
           // Image with status overlay
           Stack(
             children: [
-              ClipRRect(
+              SmartImage(
+                imageSource: spot.imageUrl,
+                height: 140,
+                width: double.infinity,
+                fit: BoxFit.cover,
                 borderRadius:
                     const BorderRadius.vertical(top: Radius.circular(20)),
-                child: Image.network(spot.imageUrl,
-                    height: 140,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
-                        height: 140,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(colors: [
-                            AppColors.accent.withValues(alpha: 0.1),
-                            AppColors.primary.withValues(alpha: 0.05)
-                          ]),
-                          borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(20)),
-                        ),
-                        child: const Center(
-                            child: Icon(Icons.local_parking,
-                                size: 48, color: AppColors.textHint)))),
               ),
               // Gradient overlay
               Positioned.fill(

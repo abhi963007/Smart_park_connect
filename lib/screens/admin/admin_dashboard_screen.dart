@@ -9,6 +9,7 @@ import 'admin_users_detail_screen.dart';
 import 'admin_spaces_detail_screen.dart';
 import 'admin_bookings_detail_screen.dart';
 import 'admin_revenue_detail_screen.dart';
+import '../../widgets/smart_image.dart';
 
 /// Admin dashboard screen with stats, user management, parking approvals
 class AdminDashboardScreen extends StatelessWidget {
@@ -639,30 +640,13 @@ class _ParkingApprovalScreen extends StatelessWidget {
                           children: [
                             // Image with overlay
                             Stack(children: [
-                              ClipRRect(
+                              SmartImage(
+                                imageSource: spot.imageUrl,
+                                height: 130,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
                                 borderRadius: const BorderRadius.vertical(
                                     top: Radius.circular(20)),
-                                child: Image.network(spot.imageUrl,
-                                    height: 130,
-                                    width: double.infinity,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => Container(
-                                        height: 130,
-                                        width: double.infinity,
-                                        decoration: BoxDecoration(
-                                            gradient: LinearGradient(colors: [
-                                              AppColors.warning
-                                                  .withValues(alpha: 0.1),
-                                              AppColors.warning
-                                                  .withValues(alpha: 0.05)
-                                            ]),
-                                            borderRadius:
-                                                const BorderRadius.vertical(
-                                                    top: Radius.circular(20))),
-                                        child: const Center(
-                                            child: Icon(Icons.local_parking,
-                                                size: 48,
-                                                color: AppColors.textHint)))),
                               ),
                               Positioned.fill(
                                   child: Container(

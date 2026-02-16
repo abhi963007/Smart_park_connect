@@ -9,6 +9,7 @@ import '../../core/constants/app_strings.dart';
 import '../../models/parking_spot.dart';
 import '../../models/user_model.dart';
 import '../../providers/app_provider.dart';
+import '../../widgets/map_pin.dart';
 import '../booking/select_booking_time_screen.dart';
 
 /// Parking spot details screen with image gallery, amenities, host info, map
@@ -101,7 +102,9 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                                   final prov = ctx.watch<AppProvider>();
                                   final isFav = prov.isFavorite(spot.id);
                                   return _buildCircleButton(
-                                    isFav ? Icons.favorite : Icons.favorite_border,
+                                    isFav
+                                        ? Icons.favorite
+                                        : Icons.favorite_border,
                                     () => prov.toggleFavorite(spot.id),
                                     color: isFav ? AppColors.error : null,
                                   );
@@ -217,8 +220,7 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                             // Owner avatar
                             CircleAvatar(
                               radius: 22,
-                              backgroundImage:
-                                  NetworkImage(spot.ownerAvatar),
+                              backgroundImage: NetworkImage(spot.ownerAvatar),
                               onBackgroundImageError: (_, __) {},
                               child: const Icon(Icons.person),
                             ),
@@ -308,9 +310,8 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                           height: 1.6,
                         ),
                         maxLines: _showFullDescription ? null : 3,
-                        overflow: _showFullDescription
-                            ? null
-                            : TextOverflow.ellipsis,
+                        overflow:
+                            _showFullDescription ? null : TextOverflow.ellipsis,
                       ),
                       GestureDetector(
                         onTap: () {
@@ -347,7 +348,8 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                             ),
                           ),
                           GestureDetector(
-                            onTap: () => _openInMaps(spot.latitude, spot.longitude),
+                            onTap: () =>
+                                _openInMaps(spot.latitude, spot.longitude),
                             child: Text(
                               AppStrings.openInMaps,
                               style: GoogleFonts.poppins(
@@ -373,35 +375,26 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                           child: IgnorePointer(
                             child: FlutterMap(
                               options: MapOptions(
-                                initialCenter: LatLng(spot.latitude, spot.longitude),
+                                initialCenter:
+                                    LatLng(spot.latitude, spot.longitude),
                                 initialZoom: 15,
                               ),
                               children: [
                                 TileLayer(
-                                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                  userAgentPackageName: 'com.smartparkconnect.app',
+                                  urlTemplate:
+                                      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                  userAgentPackageName:
+                                      'com.smartparkconnect.app',
                                 ),
                                 MarkerLayer(
                                   markers: [
                                     Marker(
-                                      point: LatLng(spot.latitude, spot.longitude),
-                                      width: 40,
-                                      height: 40,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.red,
-                                          shape: BoxShape.circle,
-                                          border: Border.all(color: Colors.white, width: 3),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.red.withValues(alpha: 0.4),
-                                              blurRadius: 8,
-                                              offset: const Offset(0, 3),
-                                            ),
-                                          ],
-                                        ),
-                                        child: const Icon(Icons.local_parking, color: Colors.white, size: 18),
-                                      ),
+                                      point:
+                                          LatLng(spot.latitude, spot.longitude),
+                                      width: 44,
+                                      height: 44,
+                                      alignment: Alignment.bottomCenter,
+                                      child: const MapPin(size: 44),
                                     ),
                                   ],
                                 ),
@@ -414,7 +407,8 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                       // Coordinates info
                       Row(
                         children: [
-                          Icon(Icons.pin_drop_outlined, size: 14, color: AppColors.textHint),
+                          Icon(Icons.pin_drop_outlined,
+                              size: 14, color: AppColors.textHint),
                           const SizedBox(width: 4),
                           Text(
                             '${spot.latitude.toStringAsFixed(4)}, ${spot.longitude.toStringAsFixed(4)}',
@@ -497,7 +491,8 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                       // Role-based action button
                       if (isOwner || isAdmin)
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 14),
                           decoration: BoxDecoration(
                             color: AppColors.backgroundLight,
                             borderRadius: BorderRadius.circular(14),
@@ -507,7 +502,9 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                isOwner ? Icons.visibility_outlined : Icons.admin_panel_settings_outlined,
+                                isOwner
+                                    ? Icons.visibility_outlined
+                                    : Icons.admin_panel_settings_outlined,
                                 color: AppColors.textSecondary,
                                 size: 18,
                               ),
@@ -563,9 +560,10 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
   }
 
   Future<void> _openInMaps(double lat, double lng) async {
-    final googleMapsUrl = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
+    final googleMapsUrl =
+        Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
     final geoUrl = Uri.parse('geo:$lat,$lng?q=$lat,$lng');
-    
+
     try {
       if (await canLaunchUrl(geoUrl)) {
         await launchUrl(geoUrl);
@@ -650,4 +648,3 @@ class _ParkingDetailsScreenState extends State<ParkingDetailsScreen> {
     );
   }
 }
-

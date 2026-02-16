@@ -7,6 +7,7 @@ import '../../models/parking_spot.dart';
 import '../../models/booking.dart';
 import '../../providers/app_provider.dart';
 import 'booking_confirmation_screen.dart';
+import '../../widgets/smart_image.dart';
 
 /// Payment & Confirmation screen with booking summary, payment method, price breakdown
 /// Matches reference: payment_&_confirmation/screen.png
@@ -94,20 +95,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       child: Row(
                         children: [
                           // Parking image
-                          ClipRRect(
+                          SmartImage(
+                            imageSource: spot.imageUrl,
+                            width: 80,
+                            height: 80,
+                            fit: BoxFit.cover,
                             borderRadius: BorderRadius.circular(12),
-                            child: Image.network(
-                              spot.imageUrl,
-                              width: 80,
-                              height: 80,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => Container(
-                                width: 80,
-                                height: 80,
-                                color: AppColors.shimmerBase,
-                                child: const Icon(Icons.local_parking),
-                              ),
-                            ),
                           ),
                           const SizedBox(width: 14),
                           Expanded(

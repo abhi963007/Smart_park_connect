@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../core/constants/app_colors.dart';
 import '../services/location_service.dart';
 import '../models/parking_spot.dart';
+import 'map_pin.dart';
 
 /// Real map widget using OpenStreetMap with GPS functionality
 class RealMapWidget extends StatefulWidget {
@@ -163,10 +164,12 @@ class _RealMapWidgetState extends State<RealMapWidget> {
                   return Marker(
                     point: location,
                     width: 60,
-                    height: 80,
+                    height: 90,
+                    alignment: Alignment.bottomCenter,
                     child: GestureDetector(
                       onTap: () => widget.onMarkerTap?.call(spot),
                       child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           // Price bubble
                           Container(
@@ -184,7 +187,7 @@ class _RealMapWidgetState extends State<RealMapWidget> {
                               ],
                             ),
                             child: Text(
-                              '₹${spot.pricePerHour}/hr',
+                              '₹${spot.pricePerHour.toStringAsFixed(0)}',
                               style: GoogleFonts.poppins(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w600,
@@ -192,33 +195,13 @@ class _RealMapWidgetState extends State<RealMapWidget> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 4),
-                          // Parking marker
-                          Container(
-                            width: 36,
-                            height: 36,
-                            decoration: BoxDecoration(
-                              color: spot.isAvailable
-                                  ? AppColors.primary
-                                  : AppColors.error,
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 2),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: (spot.isAvailable
-                                          ? AppColors.primary
-                                          : AppColors.error)
-                                      .withValues(alpha: 0.3),
-                                  blurRadius: 8,
-                                  spreadRadius: 2,
-                                ),
-                              ],
-                            ),
-                            child: const Icon(
-                              Icons.local_parking,
-                              color: Colors.white,
-                              size: 20,
-                            ),
+                          const SizedBox(height: 2),
+                          // Google-like Map Pin
+                          MapPin(
+                            size: 36,
+                            color: spot.isAvailable
+                                ? const Color(0xFFEA4335) // Google Red
+                                : AppColors.error,
                           ),
                         ],
                       ),

@@ -15,12 +15,21 @@ class AdminUsersDetailScreen extends StatefulWidget {
 class _AdminUsersDetailScreenState extends State<AdminUsersDetailScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  String? _currentAdminId;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() => setState(() {}));
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Get current admin ID from provider
+    final provider = context.read<AppProvider>();
+    _currentAdminId = provider.currentUser.id;
   }
 
   @override
@@ -30,15 +39,16 @@ class _AdminUsersDetailScreenState extends State<AdminUsersDetailScreen>
   }
 
   List<UserModel> _filter(List<UserModel> users) {
+    // Filter out admins from the list - only show owners and drivers
+    final nonAdminUsers = users.where((u) => u.role != UserRole.admin).toList();
+
     switch (_tabController.index) {
       case 1:
-        return users.where((u) => u.role == UserRole.admin).toList();
+        return nonAdminUsers.where((u) => u.role == UserRole.owner).toList();
       case 2:
-        return users.where((u) => u.role == UserRole.owner).toList();
-      case 3:
-        return users.where((u) => u.role == UserRole.user).toList();
+        return nonAdminUsers.where((u) => u.role == UserRole.user).toList();
       default:
-        return users;
+        return nonAdminUsers;
     }
   }
 
@@ -47,7 +57,7 @@ class _AdminUsersDetailScreenState extends State<AdminUsersDetailScreen>
     final provider = context.watch<AppProvider>();
     final allUsers = provider.allUsers;
     final filtered = _filter(allUsers);
-    final tabs = ['All', 'Admins', 'Owners', 'Drivers'];
+    final tabs = ['All', 'Owners', 'Drivers'];
 
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
@@ -120,7 +130,7 @@ class _AdminUsersDetailScreenState extends State<AdminUsersDetailScreen>
                       fontSize: 13, fontWeight: FontWeight.w600),
                   unselectedLabelStyle: GoogleFonts.poppins(
                       fontSize: 13, fontWeight: FontWeight.w500),
-                  tabs: List.generate(4, (i) => Tab(text: tabs[i])),
+                  tabs: List.generate(3, (i) => Tab(text: tabs[i])),
                 ),
               ),
             ),
@@ -267,7 +277,7 @@ class _AdminUsersDetailScreenState extends State<AdminUsersDetailScreen>
                   _approvalBadge(user),
                 ],
                 const SizedBox(height: 8),
-                // Action buttons
+                // Action buttons - hide delete for current admin
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -276,12 +286,15 @@ class _AdminUsersDetailScreenState extends State<AdminUsersDetailScreen>
                       color: AppColors.primary,
                       onTap: () => _showEditUserDialog(user),
                     ),
-                    const SizedBox(width: 8),
-                    _actionButton(
-                      icon: Icons.delete_outline,
-                      color: AppColors.error,
-                      onTap: () => _showDeleteConfirmation(user),
-                    ),
+                    // Only show delete button if not the current admin
+                    if (user.id != _currentAdminId) ...[
+                      const SizedBox(width: 8),
+                      _actionButton(
+                        icon: Icons.delete_outline,
+                        color: AppColors.error,
+                        onTap: () => _showDeleteConfirmation(user),
+                      ),
+                    ],
                   ],
                 ),
               ],
